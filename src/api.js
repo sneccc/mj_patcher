@@ -218,6 +218,7 @@ MJ.API = {
     },
 
     extractChannelId: () => {
+        console.log('Extracting channel ID...');
         // If we already have a user ID, use it to form the channel ID
         if (MJ.API.settings.userId) {
             return `singleplayer_${MJ.API.settings.userId}`;
