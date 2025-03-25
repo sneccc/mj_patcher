@@ -3,11 +3,9 @@ window.MJ = window.MJ || {};
 MJ.Utils = {
     // Obfuscation functions
     reverseString: (str) => str.split('').reverse().join(''),
-    deobfuscate: (str) => MJ.Utils.reverseString(str),
-
-    // Define the reference variable using reversed string
-    kojima: (() => MJ.Utils.deobfuscate('yenruojdim'))(),
-
+    deobfuscate: null, // We'll define this after the object is created
+    kojima: null, // We'll define this after the object is created
+    
     shuffleArray: (array) => {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -44,4 +42,6 @@ MJ.Utils = {
 
         return currentPrompts;
     }
-}; 
+};
+MJ.Utils.deobfuscate = (str) => MJ.Utils.reverseString(str);
+MJ.Utils.kojima = MJ.Utils.deobfuscate('yenruojdim');
