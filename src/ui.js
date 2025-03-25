@@ -1182,13 +1182,19 @@ MJ.UI = {
 
         // Function to refresh collections list
         const refreshCollectionsList = () => {
-            if (!MJ.Prompts || !MJ.Prompts.getAllCollections) {
+            if (!window.MJ || !window.MJ.Prompts) {
                 console.error('MJ.Prompts not initialized');
+                collectionsList.innerHTML = '<div style="color: #ff6b6b;">Error: Prompt system not initialized</div>';
                 return;
             }
-            
+
             collectionsList.innerHTML = '';
             const collections = MJ.Prompts.getAllCollections();
+            
+            if (!collections || Object.keys(collections).length === 0) {
+                collectionsList.innerHTML = '<div style="color: #8a8aaa;">No collections saved yet</div>';
+                return;
+            }
             
             Object.entries(collections).forEach(([name, collection]) => {
                 const collectionDiv = document.createElement('div');
