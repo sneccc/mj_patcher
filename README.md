@@ -1,64 +1,45 @@
-# MJ Patcher
+```ascii
+    __  ___      _       ____       _                 
+   /  |/  /___ _(_)___  / __ \_____(_)_____________  
+  / /|_/ / __ `/ / __ \/ /_/ / ___/ / ___/ ___/ __ \ 
+ / /  / / /_/ / / / / / ____/ /  / / /__/ /  / /_/ / 
+ \_/\_/\__,_/_/_/ /_/_/   /_/  /_/\__/_/   \____/  
+```
 
-A Tampermonkey userscript for managing and submitting prompts to Midjourney. This tool provides a user-friendly interface for submitting multiple prompts, managing queues, and automating the prompt submission process.
+> A Tampermonkey userscript for automating MJ prompt submissions
+
+## Quick Start
+```bash
+# 1. Install Tampermonkey
+# 2. Create new script
+# 3. Copy main.js contents
+# 4. Update @require URLs
+# 5. Save & run
+```
 
 ## Features
+- 🚀 Multi-prompt submission
+- ⏳ Queue management
+- 🔍 Auto ID detection
+- ⚙️ Settings persistence
+- 🎲 Random delays
+- 📚 Pre-built collections
 
-- **Prompt Management**: Submit multiple prompts at once with variable substitution
-- **Queue System**: Automatically manage and process a queue of prompts
-- **Auto-Detection**: Automatically detect user ID and channel ID from network requests
-- **Settings Management**: Save and load user settings including tokens and parameters
-- **Random Delay**: Add random delays between prompt submissions to avoid rate limiting
-- **Pre-built Prompt Collections**: Quick access to curated collections of prompts for:
-  - Landscapes
-  - Characters
-  - Everyday Objects
-  - Validation Tests
-
-## Installation
-
-1. Install Tampermonkey in your browser
-2. Create a new script
-3. Copy the contents of `main.js` into the script editor
-4. Update the `@require` URLs to point to your GitHub repository
-5. Save the script
+## Files
+```
+src/
+├── main.js    # Entry point
+├── api.js     # Network calls
+├── queue.js   # Queue logic
+├── ui.js      # Interface
+└── utils.js   # Helpers
+```
 
 ## Usage
-
-1. Visit Midjourney's website
-2. The MJ Patcher interface will appear in the top-right corner
-3. Configure your settings in the Settings tab:
-   - Paste your Midjourney cookie/token
-   - Enter your channel ID (or use auto-detect)
-   - Set default parameters and delays
-4. Use the Prompts tab to:
-   - Enter custom prompts
-   - Use pre-built prompt collections
-   - Monitor the queue status
-   - Process or clear the queue
-
-## File Structure
-
-- `main.js`: Main script file with userscript metadata and initialization
-- `utils.js`: Utility functions for string manipulation and prompt processing
-- `api.js`: API interaction functions and network monitoring
-- `queue.js`: Queue management and processing logic
-- `ui.js`: User interface components and styling
-
-## Development
-
-To modify or extend the script:
-
-1. Clone the repository
-2. Make changes to the source files
-3. Update the `@require` URLs in `main.js` to point to your repository
-4. Test the changes locally
-5. Push to GitHub
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Visit MJ
+2. Find MJ Patcher in top-right
+3. Configure settings
+4. Start submitting
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT 
