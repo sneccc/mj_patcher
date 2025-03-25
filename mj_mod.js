@@ -18,7 +18,7 @@
     const deobfuscate = str => reverseString(str);
     
     // Define the reference variable using reversed string
-    const kojima = deobfuscate('yenruojdim');  // This will deobfuscate to 'midjourney'
+    const kojima = deobfuscate('yenruojdim');
 
     // Configuration
     const API_ENDPOINT = `https://www.${kojima}.com/api/app/submit-jobs`;
