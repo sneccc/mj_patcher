@@ -1182,6 +1182,11 @@ MJ.UI = {
 
         // Function to refresh collections list
         const refreshCollectionsList = () => {
+            if (!MJ.Prompts || !MJ.Prompts.getAllCollections) {
+                console.error('MJ.Prompts not initialized');
+                return;
+            }
+            
             collectionsList.innerHTML = '';
             const collections = MJ.Prompts.getAllCollections();
             

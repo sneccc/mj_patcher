@@ -15,8 +15,8 @@
             "matches": ["https://www.midjourney.com/*"],
             "js": [
                 "src/utils.js",
-                "src/api.js",
                 "src/prompts.js",
+                "src/api.js",
                 "src/queue.js",
                 "src/ui.js",
                 "src/main.js"
