@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         ${kojima} Prompt Manager
+// @name         MJ Prompt Manager
 // @namespace    https://www.${kojima}.com/
 // @version      1.0
 // @description  UI for managing and submitting multiple prompts to ${kojima}, including advanced variable substitution
 // @author       Your Name
-// @match        https://www.${kojima}.com/*
+// @match        https://www.midjourney.com/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -16,7 +16,7 @@
     // Obfuscation functions
     const reverseString = str => str.split('').reverse().join('');
     const deobfuscate = str => reverseString(str);
-    
+
     // Define the reference variable using reversed string
     const kojima = deobfuscate('yenruojdim');
 
