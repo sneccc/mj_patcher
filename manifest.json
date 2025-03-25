@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "name": "MJ Patcher",
+    "version": "1.0",
+    "description": "A tool for managing and submitting prompts to Midjourney",
+    "permissions": [
+        "storage",
+        "https://www.midjourney.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://www.midjourney.com/*"],
+            "js": [
+                "src/utils.js",
+                "src/api.js",
+                "src/prompts.js",
+                "src/queue.js",
+                "src/ui.js",
+                "src/main.js"
+            ],
+            "css": ["src/styles.css"]
+        }
+    ]
+} 

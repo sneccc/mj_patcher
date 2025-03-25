@@ -1115,6 +1115,159 @@ MJ.UI = {
                 }
             }
         }, 1000);
+
+        // Add prompt management section
+        const promptManagementContainer = document.createElement('div');
+        promptManagementContainer.style.marginTop = '20px';
+        promptManagementContainer.style.borderTop = '1px solid #ff003c';
+        promptManagementContainer.style.paddingTop = '10px';
+
+        // Add collection management section
+        const collectionSection = document.createElement('div');
+        collectionSection.style.marginBottom = '15px';
+
+        // Collection name input
+        const collectionNameInput = document.createElement('input');
+        collectionNameInput.type = 'text';
+        collectionNameInput.placeholder = 'Collection name';
+        collectionNameInput.style.width = '100%';
+        collectionNameInput.style.marginBottom = '5px';
+        collectionNameInput.style.backgroundColor = '#1a1a2e';
+        collectionNameInput.style.border = '1px solid #ff003c';
+        collectionNameInput.style.color = '#00ff9d';
+        collectionNameInput.style.padding = '5px';
+
+        // Collection description input
+        const collectionDescInput = document.createElement('input');
+        collectionDescInput.type = 'text';
+        collectionDescInput.placeholder = 'Collection description (optional)';
+        collectionDescInput.style.width = '100%';
+        collectionDescInput.style.marginBottom = '5px';
+        collectionDescInput.style.backgroundColor = '#1a1a2e';
+        collectionDescInput.style.border = '1px solid #ff003c';
+        collectionDescInput.style.color = '#00ff9d';
+        collectionDescInput.style.padding = '5px';
+
+        // Save collection button
+        const saveCollectionButton = createButton('Save Current Prompts as Collection', () => {
+            const name = collectionNameInput.value.trim();
+            if (!name) {
+                MJ.UI.updateStatus('Please enter a collection name');
+                return;
+            }
+
+            const description = collectionDescInput.value.trim();
+            const currentPrompts = promptInput.value.split('\n').filter(p => p.trim());
+            
+            if (currentPrompts.length === 0) {
+                MJ.UI.updateStatus('No prompts to save');
+                return;
+            }
+
+            MJ.Prompts.addCollection(name, currentPrompts, description);
+            MJ.UI.updateStatus(`Saved ${currentPrompts.length} prompts to collection "${name}"`);
+            
+            // Clear inputs
+            collectionNameInput.value = '';
+            collectionDescInput.value = '';
+            
+            // Refresh collections list
+            refreshCollectionsList();
+        });
+
+        // Collections list container
+        const collectionsList = document.createElement('div');
+        collectionsList.id = 'mj-collections-list';
+        collectionsList.style.marginTop = '10px';
+
+        // Function to refresh collections list
+        const refreshCollectionsList = () => {
+            collectionsList.innerHTML = '';
+            const collections = MJ.Prompts.getAllCollections();
+            
+            Object.entries(collections).forEach(([name, collection]) => {
+                const collectionDiv = document.createElement('div');
+                collectionDiv.style.marginBottom = '10px';
+                collectionDiv.style.padding = '5px';
+                collectionDiv.style.border = '1px solid #ff003c';
+                collectionDiv.style.backgroundColor = '#1a1a2e';
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.style.color = '#00ff9d';
+                nameDiv.style.fontWeight = 'bold';
+                nameDiv.textContent = name;
+                
+                const descDiv = document.createElement('div');
+                descDiv.style.color = '#8a8aaa';
+                descDiv.style.fontSize = '0.9em';
+                descDiv.textContent = collection.description || 'No description';
+                
+                const countDiv = document.createElement('div');
+                countDiv.style.color = '#ff6b6b';
+                countDiv.style.fontSize = '0.9em';
+                countDiv.textContent = `${collection.prompts.length} prompts`;
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.marginTop = '5px';
+                
+                const addToQueueButton = createButton('Add to Queue', () => {
+                    MJ.Queue.addCollectionToQueue(name);
+                    MJ.Queue.startQueueProcessing();
+                });
+                
+                const deleteButton = createButton('Delete', () => {
+                    if (MJ.Prompts.deleteCollection(name)) {
+                        MJ.UI.updateStatus(`Deleted collection "${name}"`);
+                        refreshCollectionsList();
+                    }
+                });
+                
+                buttonContainer.appendChild(addToQueueButton);
+                buttonContainer.appendChild(deleteButton);
+                
+                collectionDiv.appendChild(nameDiv);
+                collectionDiv.appendChild(descDiv);
+                collectionDiv.appendChild(countDiv);
+                collectionDiv.appendChild(buttonContainer);
+                
+                collectionsList.appendChild(collectionDiv);
+            });
+        };
+
+        // Add last used prompts section
+        const lastUsedSection = document.createElement('div');
+        lastUsedSection.style.marginTop = '15px';
+
+        const lastUsedButton = createButton('Add Last Used Prompts to Queue', () => {
+            if (MJ.Queue.addLastUsedToQueue()) {
+                MJ.Queue.startQueueProcessing();
+            } else {
+                MJ.UI.updateStatus('No last used prompts available');
+            }
+        });
+
+        const clearLastUsedButton = createButton('Clear Last Used Prompts', () => {
+            MJ.Prompts.clearLastUsed();
+            MJ.UI.updateStatus('Cleared last used prompts');
+        });
+
+        // Assemble the UI
+        collectionSection.appendChild(collectionNameInput);
+        collectionSection.appendChild(collectionDescInput);
+        collectionSection.appendChild(saveCollectionButton);
+        collectionSection.appendChild(collectionsList);
+
+        lastUsedSection.appendChild(lastUsedButton);
+        lastUsedSection.appendChild(clearLastUsedButton);
+
+        promptManagementContainer.appendChild(collectionSection);
+        promptManagementContainer.appendChild(lastUsedSection);
+
+        // Add to prompts tab
+        promptsTab.appendChild(promptManagementContainer);
+
+        // Initial refresh of collections list
+        refreshCollectionsList();
     },
 
     updateStatus: (message) => {

@@ -64,6 +64,9 @@ MJ.Queue = {
             console.log('Attempting to submit prompt:', fullPrompt);
             const result = await MJ.API.submitPrompt(fullPrompt);
 
+            // Add to last used prompts
+            MJ.Prompts.addToLastUsed(prompt);
+
             MJ.UI.updateStatus(`Prompt submitted successfully: ${prompt}`);
             console.log('Midjourney API response:', result);
 
@@ -84,5 +87,27 @@ MJ.Queue = {
 
     getRandomDelay: () => {
         return Math.floor(Math.random() * (MJ.API.settings.maxDelay - MJ.API.settings.minDelay + 1)) + MJ.API.settings.minDelay;
+    },
+
+    // Add prompts from a collection to the queue
+    addCollectionToQueue: (collectionName) => {
+        const collection = MJ.Prompts.getCollection(collectionName);
+        if (collection) {
+            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...collection.prompts];
+            MJ.UI.updateStatus(`Added ${collection.prompts.length} prompts from collection "${collectionName}" to queue`);
+            return true;
+        }
+        return false;
+    },
+
+    // Add last used prompts to the queue
+    addLastUsedToQueue: () => {
+        const lastUsed = MJ.Prompts.getLastUsed();
+        if (lastUsed.length > 0) {
+            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...lastUsed];
+            MJ.UI.updateStatus(`Added ${lastUsed.length} last used prompts to queue`);
+            return true;
+        }
+        return false;
     }
 }; 
