@@ -285,395 +285,73 @@ MJ.UI = {
 
         promptsTab.appendChild(queueContainer);
 
-        // Add landscape prompts button with cyberpunk theme
-        const landscapePromptsButton = createButton('Queue Landscape Prompts', () => {
-            // Collection of landscape prompts with varied subjects and styles
-            const landscapePrompts = [
-                "A majestic mountain range at sunset with golden light casting long shadows across snow-capped peaks.",
-                "A serene misty valley with a winding river and ancient trees draped in morning fog.",
-                "A dramatic coastline with waves crashing against rugged cliffs and a lighthouse in the distance.",
-                "A lush tropical rainforest with a hidden waterfall and exotic flowers in vibrant colors.",
-                "A vast desert landscape with intricate sand dunes sculpted by the wind at golden hour.",
-                "An enchanted forest with bioluminescent plants and mystical light filtering through ancient trees.",
-                "A terraced rice field in Asia during harvest season with workers in traditional conical hats.",
-                "A dramatic volcanic landscape with flowing lava and steam rising against a twilight sky.",
-                "A peaceful lavender field stretching to the horizon with an old stone farmhouse in Provence.",
-                "A grand canyon with layered rock formations revealed by millions of years of erosion.",
-                "An Arctic landscape with massive blue icebergs floating in pristine waters under the northern lights.",
-                "An autumn forest with a carpet of fallen leaves in red, orange, and gold beside a reflective lake.",
-                "A Scottish highland vista with rolling hills covered in heather and an ancient castle ruin.",
-                "A Japanese garden in fall with maple trees, carefully arranged stones, and a traditional bridge.",
-                "A Tuscan countryside with gently rolling hills, cypress trees, and a rustic villa at sunset.",
-                "A prairie landscape with tall grasses swaying in the wind under a dramatic stormy sky.",
-                "An aerial view of the Amazon rainforest with a winding river cutting through endless green canopy.",
-                "A salt flat landscape during rainy season creating a perfect mirror reflection of the sky.",
-                "A bamboo forest with tall stalks creating natural corridors of dappled light and shadow.",
-                "An underwater landscape with a vibrant coral reef and schools of colorful tropical fish.",
-                "A cyberpunk cityscape with holographic advertisements reflecting in puddles after rainfall",
-                "A surreal desert landscape where massive stone hands emerge from sand dunes under twin moons",
-                "An ancient forest where trees have grown around abandoned temple ruins over centuries",
-                "A subterranean crystal cave with bioluminescent fungi and an underground lake",
-                "A floating archipelago of small islands connected by rope bridges above misty clouds",
-                "A post-apocalyptic cityscape reclaimed by nature with vines climbing skyscrapers",
-                "A realm where land and sea merge with islands that transform into sea creatures at dusk",
-                "An impossible mountain peak twisted in an Escher-like formation defying gravity",
-                "A mirrored salt flat landscape at sunset where sky and earth become indistinguishable",
-                "A geothermal valley with vibrant mineral deposits creating a natural rainbow landscape",
-                "A massive waterfall cascading into a swirling dimensional portal at the ocean's edge",
-                "A night landscape where luminous plants replace stars in a perpetual twilight world",
-                "A city built within the hollow trunk of a colossal ancient tree thousands of feet tall",
-                "An aurora borealis reflecting on a field of perfectly clear ice sculptures",
-                "A landscape where giant crystal formations grow like trees, refracting sunlight in prismatic patterns",
-                "A coastline where the ocean meets a desert, creating glass formations along the shore",
-                "A valley where gravity works sideways, with waterfalls flowing horizontally across cliffs"
-            ];
+        // Add prompt category buttons
+        const loadPromptCategories = async () => {
+            try {
+                const categories = JSON.parse(GM_getResourceText('prompt_categories'));
+                
+                // Create a container for category buttons
+                const categoryButtonsContainer = document.createElement('div');
+                categoryButtonsContainer.style.marginTop = '10px';
+                categoryButtonsContainer.style.marginBottom = '10px';
+                promptsTab.insertBefore(categoryButtonsContainer, statusDisplay);
 
-            // Get any additional parameters from the prompt input
-            const additionalParams = promptInput.value.trim();
+                // Create buttons for each category
+                Object.entries(categories).forEach(([key, category]) => {
+                    const button = createButton(`Queue ${category.name}`, () => {
+                        // Get any additional parameters from the prompt input
+                        const additionalParams = promptInput.value.trim();
 
-            // Process each landscape prompt and add it to the queue
-            let processedPrompts = [];
-            landscapePrompts.forEach(prompt => {
-                // If there are additional parameters, append them to the prompt
-                const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                processedPrompts.push(fullPrompt);
-            });
+                        // Process each prompt and add it to the queue
+                        let processedPrompts = [];
+                        category.prompts.forEach(prompt => {
+                            // If there are additional parameters, append them to the prompt
+                            const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
+                            processedPrompts.push(fullPrompt);
+                        });
 
-            // Shuffle the prompts before adding to queue
-            processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
+                        // Shuffle the prompts before adding to queue
+                        processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
 
-            // Add all processed prompts to the queue
-            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
+                        // Add all processed prompts to the queue
+                        MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
 
-            // Update status
-            MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized landscape prompts to queue`);
-            console.log(`Added ${processedPrompts.length} randomized landscape prompts to queue. Starting processing...`);
+                        // Update status
+                        MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue`);
+                        console.log(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue. Starting processing...`);
 
-            // Start processing if not already doing so
-            MJ.Queue.startQueueProcessing();
-        });
+                        // Start processing if not already doing so
+                        MJ.Queue.startQueueProcessing();
+                    });
 
-        landscapePromptsButton.style.backgroundColor = '#00ff9d';
-        landscapePromptsButton.style.boxShadow = '0 0 5px rgba(0,255,157,0.5)';
-        landscapePromptsButton.style.width = '100%';
-        landscapePromptsButton.style.marginTop = '10px';
-        landscapePromptsButton.style.marginBottom = '5px';
+                    // Apply category-specific styling
+                    button.style.backgroundColor = category.color;
+                    button.style.boxShadow = `0 0 5px ${category.color}80`;
+                    button.style.width = '100%';
+                    button.style.marginTop = '5px';
+                    button.style.marginBottom = '5px';
 
-        // Update hover effects for this specific button
-        landscapePromptsButton.addEventListener('mouseover', () => {
-            landscapePromptsButton.style.backgroundColor = '#00ffb3';
-            landscapePromptsButton.style.boxShadow = '0 0 10px rgba(0,255,157,0.8)';
-        });
+                    // Update hover effects for this specific button
+                    button.addEventListener('mouseover', () => {
+                        button.style.backgroundColor = category.color;
+                        button.style.boxShadow = `0 0 10px ${category.color}cc`;
+                    });
 
-        landscapePromptsButton.addEventListener('mouseout', () => {
-            landscapePromptsButton.style.backgroundColor = '#00ff9d';
-            landscapePromptsButton.style.boxShadow = '0 0 5px rgba(0,255,157,0.5)';
-        });
+                    button.addEventListener('mouseout', () => {
+                        button.style.backgroundColor = category.color;
+                        button.style.boxShadow = `0 0 5px ${category.color}80`;
+                    });
 
-        promptsTab.insertBefore(landscapePromptsButton, statusDisplay);
+                    categoryButtonsContainer.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Error loading prompt categories:', error);
+                MJ.UI.updateStatus('Error loading prompt categories');
+            }
+        };
 
-        // Add validation prompts button with cyberpunk theme
-        const validationPromptsButton = createButton('Queue Validation Prompts', () => {
-            // Get the validation prompts from the notes
-            const validationPrompts = [
-                "A futuristic cityscape with towering skyscrapers and flying cars.",
-                "A medieval tavern with a fireplace, wooden tables, and people talking.",
-                "A dense forest with tall trees, moss-covered rocks, and a river.",
-                "An airship floating in the sky above a vast mountain range.",
-                "A ruined city with abandoned buildings and overgrown vegetation.",
-                "A warrior in armor holding a sword and standing on a battlefield.",
-                "A person wearing a high-tech suit with glowing elements.",
-                "A woman sitting in a café, looking out the window at the street.",
-                "A wizard casting a spell with sparks of energy around their hands.",
-                "A humanoid robot standing in a laboratory surrounded by monitors.",
-                "A lone figure standing on a cliff, looking at the horizon.",
-                "A study room with bookshelves, a desk, and scattered papers.",
-                "A narrow alleyway with a single streetlamp casting shadows.",
-                "A lighthouse standing on a rocky shore with waves crashing.",
-                "A car driving on a highway with a city skyline in the distance.",
-                "A large castle with towers and a drawbridge over a moat.",
-                "A dragon flying over a valley with a river below.",
-                "A battlefield with soldiers clashing and banners waving.",
-                "A small village with cobblestone streets and wooden houses.",
-                "A marketplace filled with people, stalls, and goods.",
-                "A table with a chessboard in the middle of a game.",
-                "A clock tower with gears visible inside the structure.",
-                "A plate of assorted food arranged on a wooden table.",
-                "An astronaut floating in space near a satellite.",
-                "A butterfly resting on a flower in a field.",
-                "A library where books float and pages turn themselves with glowing text",
-                "A hybrid transport vehicle that functions as both submarine and aircraft",
-                "A complex mechanical clockwork device with exposed gears and moving parts",
-                "A doorway standing alone in a field that opens to different dimensions",
-                "A creature that appears half-mechanical and half-organic in detailed view",
-                "A lush garden where plants respond to music playing nearby",
-                "An ornate magical staff with intricate carvings and glowing runes",
-                "A futuristic operating room with holographic displays and robotic assistants",
-                "A living painting where the scene changes based on the observer's emotions",
-                "An ancient stone circle at the exact moment of celestial alignment",
-                "A supernatural being composed of light particles interacting with physical matter",
-                "A fantasy potion shop with bottles of colorful liquids with magical properties",
-                "An impossible staircase in Escher style that loops continuously",
-                "A surreal dinner party where the food is transformed into unexpected objects",
-                "A giant mechanical insect with detailed inner workings visible through transparent parts",
-                "A magician pulling impossible objects from an ordinary hat on stage",
-                "A character stepping between parallel universes with half their body in each world"
-            ];
-
-            // Get any additional parameters from the prompt input
-            const additionalParams = promptInput.value.trim();
-
-            // Process each validation prompt and add it to the queue
-            let processedPrompts = [];
-            validationPrompts.forEach(prompt => {
-                // If there are additional parameters, append them to the prompt
-                const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                processedPrompts.push(fullPrompt);
-            });
-
-            // Shuffle the prompts before adding to queue
-            processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
-
-            // Add all processed prompts to the queue
-            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
-
-            // Update status
-            MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized validation prompts to queue`);
-            console.log(`Added ${processedPrompts.length} randomized validation prompts to queue. Starting processing...`);
-
-            // Start processing if not already doing so
-            MJ.Queue.startQueueProcessing();
-        });
-
-        validationPromptsButton.style.backgroundColor = '#1a75ff';
-        validationPromptsButton.style.boxShadow = '0 0 5px rgba(26,117,255,0.5)';
-        validationPromptsButton.style.width = '100%';
-        validationPromptsButton.style.marginTop = '5px';
-        validationPromptsButton.style.marginBottom = '10px';
-
-        // Update hover effects for this specific button
-        validationPromptsButton.addEventListener('mouseover', () => {
-            validationPromptsButton.style.backgroundColor = '#4a8fff';
-            validationPromptsButton.style.boxShadow = '0 0 10px rgba(26,117,255,0.8)';
-        });
-
-        validationPromptsButton.addEventListener('mouseout', () => {
-            validationPromptsButton.style.backgroundColor = '#1a75ff';
-            validationPromptsButton.style.boxShadow = '0 0 5px rgba(26,117,255,0.5)';
-        });
-
-        promptsTab.insertBefore(validationPromptsButton, statusDisplay);
-
-        // Add everyday things prompts button with cyberpunk theme
-        const everydayPromptsButton = createButton('Queue Everyday Things Prompts', () => {
-            // Collection of everyday object prompts
-            const everydayPrompts = [
-                "A vintage alarm clock on a bedside table with morning light streaming through curtains.",
-                "A steaming cup of coffee on a wooden table next to an open book.",
-                "A well-worn leather wallet with cards and receipts peeking out.",
-                "A pair of glasses resting on an open newspaper.",
-                "A houseplant in a decorative pot with new leaves unfurling.",
-                "A wooden kitchen spoon resting on a ceramic spoon rest.",
-                "A smartphone charging on a nightstand with notification lights glowing.",
-                "A set of keys on a colorful keychain hanging from a hook.",
-                "A refrigerator door covered with family photos and children's artwork.",
-                "A stack of clean folded laundry on the edge of a bed.",
-                "A toothbrush and toothpaste tube beside a bathroom sink.",
-                "A dog's leash hanging from a hook by the front door.",
-                "A worn baseball cap on a coat rack in the entryway.",
-                "A cast iron pan with herbs and oil being heated on a stove.",
-                "A bicycle leaning against a wall in a garage.",
-                "A remote control on the arm of a comfortable sofa.",
-                "A desk lamp illuminating a workspace with scattered papers.",
-                "A mechanical wristwatch with its intricate gears visible.",
-                "A pair of well-worn running shoes by the door.",
-                "A half-eaten apple resting next to a laptop keyboard.",
-                "A clothes iron on an ironing board with a shirt partially pressed.",
-                "A collection of spice jars with handwritten labels in a kitchen rack.",
-                "A mailbox with envelopes and magazines sticking out.",
-                "A bathroom sink with toothbrushes, soap, and everyday items arranged neatly.",
-                "A window with raindrops running down the glass on a gray day.",
-                "A backpack hanging on a chair with books and notebooks peeking out.",
-                "A ceiling fan with dust collecting on the blades spinning slowly.",
-                "A kitchen counter with bread crumbs and a butter knife on a cutting board.",
-                "A porcelain teapot with steam rising from its spout on a lace doily.",
-                "A hand towel hanging slightly crooked on a bathroom towel ring.",
-                "A screwdriver set arranged by size in a toolbox compartment.",
-                "A hair brush with strands of hair caught in the bristles on a vanity.",
-                "A basket of fresh laundry waiting to be folded on a couch.",
-                "A water bottle with condensation forming on its surface on a desk.",
-                "A medicine cabinet with various pill bottles and health products.",
-                "A pencil holder filled with pens, pencils, and markers on a desk.",
-                "A light switch with fingerprint smudges around the plate.",
-                "A shopping list held by a magnet on a refrigerator door.",
-                "A kitchen sponge sitting in a small dish by the sink.",
-                "A comb with several teeth missing on a bathroom counter.",
-                "A power strip with multiple devices plugged in underneath a desk.",
-                "A jar of peanut butter with a knife sticking out of it.",
-                "A simple digital watch with the alarm time visible on the display.",
-                "A set of measuring cups hanging from hooks in a kitchen.",
-                "A computer mouse with a fraying cord on a mousepad.",
-                "A fly swatter hanging from a hook in a utility room.",
-                "A roll of paper towels on a kitchen counter next to a sink.",
-                "A welcome mat with muddy footprints at the front door.",
-                "A calendar hanging on a wall with important dates circled.",
-                "A dustpan and brush leaning against a wall in a corner.",
-                "An antique typewriter with a half-finished page and ink stains on worn metal keys",
-                "A child's forgotten teddy bear sitting alone on a playground swing at sunset",
-                "Raindrops creating concentric circles in a puddle reflecting neon street signs",
-                "A worn guitar with one broken string leaning against an amplifier in a dimly lit garage",
-                "A pair of ballet shoes with frayed ribbons hanging on a dressing room mirror",
-                "An old film camera surrounded by developed photographs spread across a darkroom counter",
-                "A street musician's hat filled with scattered coins and small bills on a busy sidewalk",
-                "A cracked smartphone screen still displaying an interrupted text message conversation",
-                "A vintage jukebox glowing in the corner of an otherwise empty diner at midnight",
-                "A heavily annotated script with coffee stains backstage at a theater production",
-                "A collection of seashells arranged by size on a windowsill with salt residue",
-                "A homemade birthday cake with slightly melting frosting and uneven candles",
-                "A makeshift memorial with weathered photographs and wilting flowers tied to a fence",
-                "A street artist's chalk drawing being slowly erased by light rain on pavement",
-                "A half-completed crossword puzzle with pencil erasure marks and coffee ring stains",
-                "A child's handprint in drying concrete on a newly poured sidewalk",
-                "A weathered bench with a dedication plaque in a fog-shrouded park",
-                "A lost glove placed carefully on a fence post in case its owner returns",
-                "An old rotary telephone with its cord tangled among modern charging cables",
-                "A bird's nest constructed with twigs, string, and colorful bits of plastic waste",
-                "A handwritten recipe card stained with ingredients passed down through generations"
-            ];
-
-            // Get any additional parameters from the prompt input
-            const additionalParams = promptInput.value.trim();
-
-            // Process each everyday object prompt and add it to the queue
-            let processedPrompts = [];
-            everydayPrompts.forEach(prompt => {
-                // If there are additional parameters, append them to the prompt
-                const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                processedPrompts.push(fullPrompt);
-            });
-
-            // Shuffle the prompts before adding to queue
-            processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
-
-            // Add all processed prompts to the queue
-            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
-
-            // Update status
-            MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized everyday things prompts to queue`);
-            console.log(`Added ${processedPrompts.length} randomized everyday things prompts to queue. Starting processing...`);
-
-            // Start processing if not already doing so
-            MJ.Queue.startQueueProcessing();
-        });
-
-        everydayPromptsButton.style.backgroundColor = '#ff6b6b';
-        everydayPromptsButton.style.boxShadow = '0 0 5px rgba(255,107,107,0.5)';
-        everydayPromptsButton.style.width = '100%';
-        everydayPromptsButton.style.marginTop = '5px';
-        everydayPromptsButton.style.marginBottom = '10px';
-
-        // Update hover effects for this specific button
-        everydayPromptsButton.addEventListener('mouseover', () => {
-            everydayPromptsButton.style.backgroundColor = '#ff8585';
-            everydayPromptsButton.style.boxShadow = '0 0 10px rgba(255,107,107,0.8)';
-        });
-
-        everydayPromptsButton.addEventListener('mouseout', () => {
-            everydayPromptsButton.style.backgroundColor = '#ff6b6b';
-            everydayPromptsButton.style.boxShadow = '0 0 5px rgba(255,107,107,0.5)';
-        });
-
-        promptsTab.insertBefore(everydayPromptsButton, statusDisplay);
-
-        // Add character prompts button with cyberpunk theme
-        const characterPromptsButton = createButton('Queue Character Prompts', () => {
-            // Collection of diverse character prompts
-            const characterPrompts = [
-                "A South Asian female surgeon performing a complex operation in a modern hospital setting",
-                "An African American male teacher engaging with students in a vibrant classroom",
-                "A Middle Eastern woman software engineer working at her desk with multiple monitors",
-                "A Latino firefighter rescuing people from a burning building",
-                "An East Asian male chef preparing dishes in a busy restaurant kitchen",
-                "A Native American environmental scientist collecting samples in a forest",
-                "A Black female astronaut floating in a space station conducting experiments",
-                "A Pacific Islander marine biologist diving among coral reefs",
-                "An Indian classical dancer performing in traditional costume on stage",
-                "A Hispanic female police officer helping a lost child",
-                "A Japanese male architect presenting building plans to clients",
-                "An Ethiopian coffee farmer examining fresh coffee cherries",
-                "A Korean female esports player competing in a major tournament",
-                "A Nigerian businessman giving a presentation in a corporate boardroom",
-                "A Vietnamese female mechanic repairing a complex engine",
-                "A Moroccan male fashion designer working in his studio",
-                "A Chinese female quantum physicist working with laboratory equipment",
-                "A Brazilian martial arts instructor teaching a class",
-                "A Kenyan marathon runner crossing the finish line",
-                "A Filipino nurse caring for patients in a hospital ward",
-                "A Turkish female judge presiding over a courtroom",
-                "A Jamaican music producer working at a mixing board",
-                "A Persian male florist arranging an elaborate bouquet",
-                "A Mexican female archaeologist excavating ancient ruins",
-                "A Tibetan mountain guide leading an expedition",
-                "A cybernetic person with visible augmentations playing a holographic musical instrument",
-                "A tribal elder with traditional face paint sharing stories around a campfire",
-                "A drag performer with elaborate costume mid-performance under colorful stage lights",
-                "A Paralympic athlete with a prosthetic limb breaking a world record",
-                "A female cosmonaut in a retro-futuristic spacesuit on the surface of Mars",
-                "An elderly tattoo artist with full-body ink working on a client's intricate design",
-                "A holographic AI teacher interacting with students in a mixed-reality classroom",
-                "A non-binary fashion model wearing avant-garde clothing on a futuristic runway",
-                "A deep sea explorer in a pressure suit examining bioluminescent creatures",
-                "A circus performer executing a dangerous trapeze act high above a captivated audience",
-                "A time-traveling Victorian scientist examining modern technology with steampunk tools",
-                "A blind musician feeling soundwaves visually represented through specialized technology",
-                "A genetic engineer with unusual hybrid features working in a luminous biotech laboratory",
-                "A cyborg monk in meditation as digital and organic energies flow around them",
-                "A nomadic desert dweller with weather-beaten skin collecting water from a fog harvester"
-            ];
-
-            // Get any additional parameters from the prompt input
-            const additionalParams = promptInput.value.trim();
-
-            // Process each character prompt and add it to the queue
-            let processedPrompts = [];
-            characterPrompts.forEach(prompt => {
-                // If there are additional parameters, append them to the prompt
-                const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                processedPrompts.push(fullPrompt);
-            });
-
-            // Shuffle the prompts before adding to queue
-            processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
-
-            // Add all processed prompts to the queue
-            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
-
-            // Update status
-            MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized character prompts to queue`);
-            console.log(`Added ${processedPrompts.length} randomized character prompts to queue. Starting processing...`);
-
-            // Start processing if not already doing so
-            MJ.Queue.startQueueProcessing();
-        });
-
-        characterPromptsButton.style.backgroundColor = '#9b59b6';
-        characterPromptsButton.style.boxShadow = '0 0 5px rgba(155,89,182,0.5)';
-        characterPromptsButton.style.width = '100%';
-        characterPromptsButton.style.marginTop = '5px';
-        characterPromptsButton.style.marginBottom = '10px';
-
-        // Update hover effects for this specific button
-        characterPromptsButton.addEventListener('mouseover', () => {
-            characterPromptsButton.style.backgroundColor = '#a66bbe';
-            characterPromptsButton.style.boxShadow = '0 0 10px rgba(155,89,182,0.8)';
-        });
-
-        characterPromptsButton.addEventListener('mouseout', () => {
-            characterPromptsButton.style.backgroundColor = '#9b59b6';
-            characterPromptsButton.style.boxShadow = '0 0 5px rgba(155,89,182,0.5)';
-        });
-
-        promptsTab.insertBefore(characterPromptsButton, statusDisplay);
+        // Load prompt categories
+        loadPromptCategories();
 
         // Settings tab content with cyberpunk theme
         const settingsTab = tabContents['settings'];
@@ -1279,67 +957,6 @@ MJ.UI = {
 
         // Initial refresh of collections list
         refreshCollectionsList();
-
-        // Add prompt category buttons
-        const loadPromptCategories = async () => {
-            try {
-                const categories = JSON.parse(GM_getResourceText('prompt_categories'));
-                
-                Object.entries(categories).forEach(([key, category]) => {
-                    const button = createButton(`Queue ${category.name}`, () => {
-                        // Get any additional parameters from the prompt input
-                        const additionalParams = promptInput.value.trim();
-
-                        // Process each prompt and add it to the queue
-                        let processedPrompts = [];
-                        category.prompts.forEach(prompt => {
-                            // If there are additional parameters, append them to the prompt
-                            const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                            processedPrompts.push(fullPrompt);
-                        });
-
-                        // Shuffle the prompts before adding to queue
-                        processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
-
-                        // Add all processed prompts to the queue
-                        MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
-
-                        // Update status
-                        MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue`);
-                        console.log(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue. Starting processing...`);
-
-                        // Start processing if not already doing so
-                        MJ.Queue.startQueueProcessing();
-                    });
-
-                    // Apply category-specific styling
-                    button.style.backgroundColor = category.color;
-                    button.style.boxShadow = `0 0 5px ${category.color}80`;
-                    button.style.width = '100%';
-                    button.style.marginTop = '5px';
-                    button.style.marginBottom = '10px';
-
-                    // Update hover effects for this specific button
-                    button.addEventListener('mouseover', () => {
-                        button.style.backgroundColor = category.color;
-                        button.style.boxShadow = `0 0 10px ${category.color}cc`;
-                    });
-
-                    button.addEventListener('mouseout', () => {
-                        button.style.backgroundColor = category.color;
-                        button.style.boxShadow = `0 0 5px ${category.color}80`;
-                    });
-
-                    promptsTab.insertBefore(button, statusDisplay);
-                });
-            } catch (error) {
-                console.error('Error loading prompt categories:', error);
-                MJ.UI.updateStatus('Error loading prompt categories');
-            }
-        };
-
-        // Load prompt categories
-        loadPromptCategories();
     },
 
     updateStatus: (message) => {
