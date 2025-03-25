@@ -1268,6 +1268,68 @@ MJ.UI = {
 
         // Initial refresh of collections list
         refreshCollectionsList();
+
+        // Add prompt category buttons
+        const loadPromptCategories = async () => {
+            try {
+                const response = await fetch(chrome.runtime.getURL('src/prompt_categories.json'));
+                const categories = await response.json();
+                
+                Object.entries(categories).forEach(([key, category]) => {
+                    const button = createButton(`Queue ${category.name}`, () => {
+                        // Get any additional parameters from the prompt input
+                        const additionalParams = promptInput.value.trim();
+
+                        // Process each prompt and add it to the queue
+                        let processedPrompts = [];
+                        category.prompts.forEach(prompt => {
+                            // If there are additional parameters, append them to the prompt
+                            const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
+                            processedPrompts.push(fullPrompt);
+                        });
+
+                        // Shuffle the prompts before adding to queue
+                        processedPrompts = MJ.Utils.shuffleArray(processedPrompts);
+
+                        // Add all processed prompts to the queue
+                        MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...processedPrompts];
+
+                        // Update status
+                        MJ.UI.updateStatus(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue`);
+                        console.log(`Added ${processedPrompts.length} randomized ${category.name.toLowerCase()} to queue. Starting processing...`);
+
+                        // Start processing if not already doing so
+                        MJ.Queue.startQueueProcessing();
+                    });
+
+                    // Apply category-specific styling
+                    button.style.backgroundColor = category.color;
+                    button.style.boxShadow = `0 0 5px ${category.color}80`;
+                    button.style.width = '100%';
+                    button.style.marginTop = '5px';
+                    button.style.marginBottom = '10px';
+
+                    // Update hover effects for this specific button
+                    button.addEventListener('mouseover', () => {
+                        button.style.backgroundColor = category.color;
+                        button.style.boxShadow = `0 0 10px ${category.color}cc`;
+                    });
+
+                    button.addEventListener('mouseout', () => {
+                        button.style.backgroundColor = category.color;
+                        button.style.boxShadow = `0 0 5px ${category.color}80`;
+                    });
+
+                    promptsTab.insertBefore(button, statusDisplay);
+                });
+            } catch (error) {
+                console.error('Error loading prompt categories:', error);
+                MJ.UI.updateStatus('Error loading prompt categories');
+            }
+        };
+
+        // Load prompt categories
+        loadPromptCategories();
     },
 
     updateStatus: (message) => {
