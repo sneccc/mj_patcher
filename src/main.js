@@ -1,17 +1,20 @@
 // ==UserScript==
 // @name         MJ Patcher
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.2.0
 // @description  A tool for managing and submitting prompts to Midjourney
 // @author       Your Name
 // @match        https://www.midjourney.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
-// @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/utils.js
-// @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/api.js
-// @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/queue.js
-// @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/ui.js
+// @grant        GM_getURL
+// @resource     prompt_categories https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/prompt_categories.json
+// @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/utils.js
+// @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/api.js
+// @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/queue.js
+// @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/prompts.js
+// @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/ui.js
 // ==/UserScript==
 
 (function() {
@@ -45,4 +48,4 @@
 
     // Log initialization
     console.log('MJ Patcher initialized');
-})(); 
+})();

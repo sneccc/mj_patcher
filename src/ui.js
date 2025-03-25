@@ -1283,7 +1283,7 @@ MJ.UI = {
         // Add prompt category buttons
         const loadPromptCategories = async () => {
             try {
-                const response = await fetch(chrome.runtime.getURL('src/prompt_categories.json'));
+                const response = await fetch(GM_getURL('src/prompt_categories.json'));
                 const categories = await response.json();
                 
                 Object.entries(categories).forEach(([key, category]) => {
