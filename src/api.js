@@ -217,6 +217,27 @@ MJ.API = {
         return false;
     },
 
+    extractChannelId: () => {
+        // If we already have a user ID, use it to form the channel ID
+        if (MJ.API.settings.userId) {
+            return `singleplayer_${MJ.API.settings.userId}`;
+        }
+
+        // Try to extract from cookies or page content
+        const cookieMatch = document.cookie.match(/channelId=([^;]+)/);
+        if (cookieMatch) {
+            return cookieMatch[1];
+        }
+
+        // Try to extract from JWT token
+        if (MJ.API.extractUserIdFromJWT()) {
+            return MJ.API.settings.channelId;
+        }
+
+        // Default to empty string
+        return '';
+    },
+
     submitPrompt: async (prompt) => {
         // Improved validation with specific error messages
         if (!MJ.API.settings.userToken || MJ.API.settings.userToken.trim() === '') {
