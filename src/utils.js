@@ -1,14 +1,16 @@
 window.MJ = window.MJ || {};
 
-// First define the core function independently
+// Define the core functions first, completely independent
 const reverseString = (str) => str.split('').reverse().join('');
+const deobfuscate = (str) => reverseString(str);
+const kojima = deobfuscate('yenruojdim');
 
-// Then create the Utils object with everything defined upfront
+// Then create the Utils object using the pre-defined functions
 MJ.Utils = {
     // Core functions
-    reverseString: reverseString,
-    deobfuscate: (str) => reverseString(str),
-    kojima: 'yenruojdim'.split('').reverse().join(''), // Define directly without using other functions
+    reverseString,
+    deobfuscate,
+    kojima,
     
     shuffleArray: (array) => {
         const shuffled = [...array];
