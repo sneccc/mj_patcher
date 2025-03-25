@@ -8,7 +8,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
-// @grant        GM_getURL
+// @grant        GM_getResourceURL
 // @resource     prompt_categories https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/prompt_categories.json
 // @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/utils.js
 // @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/api.js
