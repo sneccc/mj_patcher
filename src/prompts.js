@@ -4,7 +4,7 @@ MJ.Prompts = {
     // Storage key for prompts
     STORAGE_KEY: 'mj_saved_prompts',
 
-    collections: {},
+    // collections: {}, // Temporarily disabled collections
     lastUsed: [],
 
     // Initialize prompts from storage
@@ -13,13 +13,13 @@ MJ.Prompts = {
             const saved = GM_getValue(MJ.Prompts.STORAGE_KEY);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                MJ.Prompts.collections = parsed.collections || {};
+                // MJ.Prompts.collections = parsed.collections || {}; // Temporarily disabled collections
                 MJ.Prompts.lastUsed = parsed.lastUsed || [];
             }
             console.log('MJ.Prompts initialized successfully');
         } catch (error) {
             console.error('Error initializing prompts:', error);
-            MJ.Prompts.collections = {};
+            // MJ.Prompts.collections = {}; // Temporarily disabled collections
             MJ.Prompts.lastUsed = [];
         }
     },
@@ -28,7 +28,7 @@ MJ.Prompts = {
     save: () => {
         try {
             const data = {
-                collections: MJ.Prompts.collections,
+                // collections: MJ.Prompts.collections, // Temporarily disabled collections
                 lastUsed: MJ.Prompts.lastUsed
             };
             GM_setValue(MJ.Prompts.STORAGE_KEY, JSON.stringify(data));
@@ -38,6 +38,8 @@ MJ.Prompts = {
         }
     },
 
+    // Temporarily disabled collections functionality
+    /*
     // Get all collections
     getAllCollections: () => {
         if (!MJ.Prompts.collections) {
@@ -118,6 +120,7 @@ MJ.Prompts = {
             return false;
         }
     },
+    */
 
     // Add a prompt to the last used list
     addToLastUsed: (prompt) => {

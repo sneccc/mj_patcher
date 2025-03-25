@@ -800,6 +800,8 @@ MJ.UI = {
         promptManagementContainer.style.borderTop = '1px solid #ff003c';
         promptManagementContainer.style.paddingTop = '10px';
 
+        // Temporarily disabled collections UI
+        /*
         // Add collection management section
         const collectionSection = document.createElement('div');
         collectionSection.style.marginBottom = '15px';
@@ -923,6 +925,15 @@ MJ.UI = {
             });
         };
 
+        // Assemble the UI
+        collectionSection.appendChild(collectionNameInput);
+        collectionSection.appendChild(collectionDescInput);
+        collectionSection.appendChild(saveCollectionButton);
+        collectionSection.appendChild(collectionsList);
+
+        promptManagementContainer.appendChild(collectionSection);
+        */
+
         // Add last used prompts section
         const lastUsedSection = document.createElement('div');
         lastUsedSection.style.marginTop = '15px';
@@ -941,22 +952,16 @@ MJ.UI = {
         });
 
         // Assemble the UI
-        collectionSection.appendChild(collectionNameInput);
-        collectionSection.appendChild(collectionDescInput);
-        collectionSection.appendChild(saveCollectionButton);
-        collectionSection.appendChild(collectionsList);
-
         lastUsedSection.appendChild(lastUsedButton);
         lastUsedSection.appendChild(clearLastUsedButton);
 
-        promptManagementContainer.appendChild(collectionSection);
         promptManagementContainer.appendChild(lastUsedSection);
 
         // Add to prompts tab
         promptsTab.appendChild(promptManagementContainer);
 
         // Initial refresh of collections list
-        refreshCollectionsList();
+        // refreshCollectionsList(); // Temporarily disabled
     },
 
     updateStatus: (message) => {

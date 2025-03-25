@@ -89,6 +89,8 @@ MJ.Queue = {
         return Math.floor(Math.random() * (MJ.API.settings.maxDelay - MJ.API.settings.minDelay + 1)) + MJ.API.settings.minDelay;
     },
 
+    // Temporarily disabled collections functionality
+    /*
     // Add prompts from a collection to the queue
     addCollectionToQueue: (collectionName) => {
         const collection = MJ.Prompts.getCollection(collectionName);
@@ -99,6 +101,7 @@ MJ.Queue = {
         }
         return false;
     },
+    */
 
     // Add last used prompts to the queue
     addLastUsedToQueue: () => {
