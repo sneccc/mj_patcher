@@ -1,10 +1,14 @@
 window.MJ = window.MJ || {};
 
+// First define the core function independently
+const reverseString = (str) => str.split('').reverse().join('');
+
+// Then create the Utils object with everything defined upfront
 MJ.Utils = {
-    // Obfuscation functions
-    reverseString: (str) => str.split('').reverse().join(''),
-    deobfuscate: null, // Will be defined after
-    kojima: null, // Will be defined after
+    // Core functions
+    reverseString: reverseString,
+    deobfuscate: (str) => reverseString(str),
+    kojima: 'yenruojdim'.split('').reverse().join(''), // Define directly without using other functions
     
     shuffleArray: (array) => {
         const shuffled = [...array];
@@ -43,7 +47,3 @@ MJ.Utils = {
         return currentPrompts;
     }
 };
-
-// Define these functions after the object is created
-MJ.Utils.deobfuscate = (str) => MJ.Utils.reverseString(str);
-MJ.Utils.kojima = MJ.Utils.deobfuscate('yenruojdim');
