@@ -7,6 +7,7 @@
 // @match        https://www.midjourney.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_xmlhttpRequest
 // @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/utils.js
 // @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/api.js
 // @require      https://raw.githubusercontent.com/yourusername/eagle_tools/main/userscript_scripts/mj_patcher/src/queue.js
