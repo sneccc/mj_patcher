@@ -10,8 +10,8 @@ MJ.API = {
         channelId: GM_getValue(`${MJ.Utils.kojima}_channel_id`, ''),
         userId: GM_getValue(`${MJ.Utils.kojima}_user_id`, ''),
         defaultParams: GM_getValue(`${MJ.Utils.kojima}_default_params`, '--v 6.1'),
-        minDelay: GM_getValue(`${MJ.Utils.kojima}_min_delay`, 2000),
-        maxDelay: GM_getValue(`${MJ.Utils.kojima}_max_delay`, 5000),
+        minDelay: GM_getValue(`${MJ.Utils.kojima}_min_delay`, 2000), // 2 seconds in ms
+        maxDelay: GM_getValue(`${MJ.Utils.kojima}_max_delay`, 5000), // 5 seconds in ms
         requestMode: GM_getValue(`${MJ.Utils.kojima}_request_mode`, 'relaxed'),
         requestPrivate: GM_getValue(`${MJ.Utils.kojima}_request_private`, false),
         defaultVersion: GM_getValue(`${MJ.Utils.kojima}_default_version`, '6.1'),

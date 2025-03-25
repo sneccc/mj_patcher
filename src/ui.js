@@ -872,9 +872,9 @@ MJ.UI = {
         // Min delay input
         const minDelayInput = document.createElement('input');
         minDelayInput.type = 'number';
-        minDelayInput.min = '500';
-        minDelayInput.step = '500';
-        minDelayInput.value = MJ.API.settings.minDelay;
+        minDelayInput.min = '0';
+        minDelayInput.step = '0.1';
+        minDelayInput.value = MJ.API.settings.minDelay / 1000;
         Object.assign(minDelayInput.style, {
             width: '100%',
             padding: '8px',
@@ -884,27 +884,27 @@ MJ.UI = {
             borderRadius: '4px'
         });
         minDelayInput.addEventListener('change', () => {
-            const value = parseInt(minDelayInput.value);
-            if (!isNaN(value) && value >= 500) {
-                MJ.API.settings.minDelay = value;
-                // Ensure min is not greater than max
-                if (MJ.API.settings.minDelay > MJ.API.settings.maxDelay) {
-                    MJ.API.settings.maxDelay = MJ.API.settings.minDelay;
-                    maxDelayInput.value = MJ.API.settings.maxDelay;
-                }
+            const minSeconds = parseFloat(minDelayInput.value);
+            const maxSeconds = parseFloat(maxDelayInput.value);
+            
+            if (minSeconds >= 0 && minSeconds <= maxSeconds) {
+                MJ.API.settings.minDelay = Math.round(minSeconds * 1000);
+                GM_setValue(`${MJ.Utils.kojima}_min_delay`, MJ.API.settings.minDelay);
+            } else {
+                minDelayInput.value = MJ.API.settings.minDelay / 1000;
             }
         });
 
-        const minDelayField = createFormField('Min Delay (ms)', minDelayInput, '');
+        const minDelayField = createFormField('Min Delay (s)', minDelayInput, '');
         minDelayField.style.flex = '1';
         delayContainer.appendChild(minDelayField);
 
         // Max delay input
         const maxDelayInput = document.createElement('input');
         maxDelayInput.type = 'number';
-        maxDelayInput.min = '500';
-        maxDelayInput.step = '500';
-        maxDelayInput.value = MJ.API.settings.maxDelay;
+        maxDelayInput.min = '0';
+        maxDelayInput.step = '0.1';
+        maxDelayInput.value = MJ.API.settings.maxDelay / 1000;
         Object.assign(maxDelayInput.style, {
             width: '100%',
             padding: '8px',
@@ -914,21 +914,24 @@ MJ.UI = {
             borderRadius: '4px'
         });
         maxDelayInput.addEventListener('change', () => {
-            const value = parseInt(maxDelayInput.value);
-            if (!isNaN(value) && value >= MJ.API.settings.minDelay) {
-                MJ.API.settings.maxDelay = value;
+            const minSeconds = parseFloat(minDelayInput.value);
+            const maxSeconds = parseFloat(maxDelayInput.value);
+            
+            if (maxSeconds >= minSeconds) {
+                MJ.API.settings.maxDelay = Math.round(maxSeconds * 1000);
+                GM_setValue(`${MJ.Utils.kojima}_max_delay`, MJ.API.settings.maxDelay);
             } else {
-                maxDelayInput.value = MJ.API.settings.maxDelay;
+                maxDelayInput.value = MJ.API.settings.maxDelay / 1000;
             }
         });
 
-        const maxDelayField = createFormField('Max Delay (ms)', maxDelayInput, '');
+        const maxDelayField = createFormField('Max Delay (s)', maxDelayInput, '');
         maxDelayField.style.flex = '1';
         delayContainer.appendChild(maxDelayField);
 
         settingsTab.appendChild(document.createElement('label')).textContent = 'Random Delay Between Submissions';
         const delayDescription = document.createElement('small');
-        delayDescription.textContent = 'Set minimum and maximum delay (in milliseconds) between prompt submissions';
+        delayDescription.textContent = 'Set minimum and maximum delay (in seconds) between prompt submissions';
         delayDescription.style.display = 'block';
         delayDescription.style.color = '#aaa';
         delayDescription.style.marginBottom = '8px';
