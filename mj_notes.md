@@ -1,10 +1,10 @@
-# Midjourney Prompt Manager Requirements
+# MJ Prompt Manager Requirements
 
 ## Core Features
 - Create a UI interface
 - Support multiple prompt input methods
 - Implement advanced prompt substitution
-- Process and submit prompts to Midjourney API
+- Process and submit prompts to MJ API
 
 ### Advanced Prompt Substitution Example
 Input format: `"a prompt of [word1,word2,word3]..."`  
@@ -47,7 +47,7 @@ curl 'https://www.midjourney.com/api/app/submit-jobs' \
 ```
 
 ## Validation Prompts
-Collection of test prompts for validating Midjourney's capabilities:
+Collection of test prompts for validating MJ's capabilities:
 
 ### Scene Prompts
 - A futuristic cityscape with towering skyscrapers and flying cars

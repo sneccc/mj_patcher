@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         Midjourney Prompt Manager
-// @namespace    https://www.midjourney.com/
+// @name         ${kojima} Prompt Manager
+// @namespace    https://www.${kojima}.com/
 // @version      1.0
-// @description  UI for managing and submitting multiple prompts to Midjourney, including advanced variable substitution
+// @description  UI for managing and submitting multiple prompts to ${kojima}, including advanced variable substitution
 // @author       Your Name
-// @match        https://www.midjourney.com/*
+// @match        https://www.${kojima}.com/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -13,26 +13,33 @@
 (function() {
     'use strict';
 
+    // Obfuscation functions
+    const reverseString = str => str.split('').reverse().join('');
+    const deobfuscate = str => reverseString(str);
+    
+    // Define the reference variable using reversed string
+    const kojima = deobfuscate('yenruojdim');  // This will deobfuscate to 'midjourney'
+
     // Configuration
-    const API_ENDPOINT = 'https://www.midjourney.com/api/app/submit-jobs';
-    
+    const API_ENDPOINT = `https://www.${kojima}.com/api/app/submit-jobs`;
+
     // Store user token and other settings
-    let userToken = GM_getValue('midjourney_token', '');
-    let channelId = GM_getValue('midjourney_channel_id', '');
-    let userId = GM_getValue('midjourney_user_id', '');
-    let defaultParams = GM_getValue('midjourney_default_params', '--v 6.1');
-    let minDelay = GM_getValue('midjourney_min_delay', 2000);
-    let maxDelay = GM_getValue('midjourney_max_delay', 5000);
-    
+    let userToken = GM_getValue(`${kojima}_token`, '');
+    let channelId = GM_getValue(`${kojima}_channel_id`, '');
+    let userId = GM_getValue(`${kojima}_user_id`, '');
+    let defaultParams = GM_getValue(`${kojima}_default_params`, '--v 6.1');
+    let minDelay = GM_getValue(`${kojima}_min_delay`, 2000);
+    let maxDelay = GM_getValue(`${kojima}_max_delay`, 5000);
+
     // Request parameters
-    let requestMode = GM_getValue('midjourney_request_mode', 'relaxed');
-    let requestPrivate = GM_getValue('midjourney_request_private', false);
-    let defaultVersion = GM_getValue('midjourney_default_version', '6.1');
-    let defaultStylize = GM_getValue('midjourney_default_stylize', '100');
-    let defaultChaos = GM_getValue('midjourney_default_chaos', '0');
-    let defaultAspectRatio = GM_getValue('midjourney_default_aspect', '1:1');
-    let defaultQuality = GM_getValue('midjourney_default_quality', '1');
-    
+    let requestMode = GM_getValue(`${kojima}_request_mode`, 'relaxed');
+    let requestPrivate = GM_getValue(`${kojima}_request_private`, false);
+    let defaultVersion = GM_getValue(`${kojima}_default_version`, '6.1');
+    let defaultStylize = GM_getValue(`${kojima}_default_stylize`, '100');
+    let defaultChaos = GM_getValue(`${kojima}_default_chaos`, '0');
+    let defaultAspectRatio = GM_getValue(`${kojima}_default_aspect`, '1:1');
+    let defaultQuality = GM_getValue(`${kojima}_default_quality`, '1');
+
     // Track submitted prompts and their status
     let promptQueue = [];
     let isProcessing = false;
@@ -52,22 +59,22 @@
         // Create a proxy for the original XMLHttpRequest
         const originalXhrOpen = XMLHttpRequest.prototype.open;
         const originalXhrSend = XMLHttpRequest.prototype.send;
-        
+
         // Override the open method to capture URLs
         XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
             this._mjUrl = url;
             return originalXhrOpen.apply(this, arguments);
         };
-        
+
         // Override the send method to capture request data
         XMLHttpRequest.prototype.send = function(data) {
             const xhr = this;
-            
+
             // Add a response handler
             this.addEventListener('load', function() {
                 try {
                     // Check if this is a relevant Midjourney API call
-                    if (xhr._mjUrl && xhr._mjUrl.includes('midjourney.com/api/')) {
+                    if (xhr._mjUrl && xhr._mjUrl.includes(`${kojima}.com/api/`)) {
                         // Extract user ID from queue API
                         if (xhr._mjUrl.includes('/users/queue') || xhr._mjUrl.includes('/users/info')) {
                             const userIdMatch = xhr._mjUrl.match(/userId=([^&]+)/);
@@ -75,16 +82,16 @@
                                 const extractedUserId = userIdMatch[1];
                                 if (extractedUserId !== userId) {
                                     userId = extractedUserId;
-                                    GM_setValue('midjourney_user_id', userId);
+                                    GM_setValue(`${kojima}_user_id`, userId);
                                     console.log('Extracted User ID:', userId);
-                                    
+
                                     // Update channel ID based on user ID
                                     const newChannelId = `singleplayer_${userId}`;
                                     if (newChannelId !== channelId) {
                                         channelId = newChannelId;
-                                        GM_setValue('midjourney_channel_id', channelId);
+                                        GM_setValue(`${kojima}_channel_id`, channelId);
                                         console.log('Updated Channel ID:', channelId);
-                                        
+
                                         // Update UI if it exists
                                         const channelIdInput = document.getElementById('mj-channel-id-input');
                                         if (channelIdInput) {
@@ -96,16 +103,16 @@
                                 }
                             }
                         }
-                        
+
                         // Extract token from cookies if not set
                         if (!userToken) {
                             const cookies = document.cookie;
-                            if (cookies.includes('__Host-Midjourney.AuthUserTokenV3') || 
+                            if (cookies.includes('__Host-Midjourney.AuthUserTokenV3') ||
                                 cookies.includes('cf_clearance')) {
                                 userToken = cookies;
-                                GM_setValue('midjourney_token', userToken);
+                                GM_setValue(`${kojima}_token`, userToken);
                                 console.log('Extracted token from cookies');
-                                
+
                                 // Update UI if it exists
                                 const tokenInput = document.getElementById('mj-token-input');
                                 if (tokenInput) {
@@ -114,16 +121,16 @@
                                 }
                             }
                         }
-                        
+
                         // Extract channel ID from submit-jobs API
                         if (xhr._mjUrl.includes('/submit-jobs') && data) {
                             try {
                                 const requestData = JSON.parse(data);
                                 if (requestData.channelId && requestData.channelId !== channelId) {
                                     channelId = requestData.channelId;
-                                    GM_setValue('midjourney_channel_id', channelId);
+                                    GM_setValue(`${kojima}_channel_id`, channelId);
                                     console.log('Extracted Channel ID from request:', channelId);
-                                    
+
                                     // Update UI if it exists
                                     const channelIdInput = document.getElementById('mj-channel-id-input');
                                     if (channelIdInput) {
@@ -140,19 +147,19 @@
                     console.error('Error in XHR monitoring:', e);
                 }
             });
-            
+
             return originalXhrSend.apply(this, arguments);
         };
-        
+
         // Also monitor fetch requests
         const originalFetch = window.fetch;
         window.fetch = function(input, init) {
             const url = typeof input === 'string' ? input : input.url;
-            
+
             // Create a promise chain to intercept the response
             const fetchPromise = originalFetch.apply(this, arguments);
-            
-            if (url && url.includes('midjourney.com/api/')) {
+
+            if (url && url.includes(`${kojima}.com/api/`)) {
                 // Extract user ID from queue API
                 if (url.includes('/users/queue') || url.includes('/users/info')) {
                     const userIdMatch = url.match(/userId=([^&]+)/);
@@ -160,16 +167,16 @@
                         const extractedUserId = userIdMatch[1];
                         if (extractedUserId !== userId) {
                             userId = extractedUserId;
-                            GM_setValue('midjourney_user_id', userId);
+                            GM_setValue(`${kojima}_user_id`, userId);
                             console.log('Extracted User ID from fetch:', userId);
-                            
+
                             // Update channel ID based on user ID
                             const newChannelId = `singleplayer_${userId}`;
                             if (newChannelId !== channelId) {
                                 channelId = newChannelId;
-                                GM_setValue('midjourney_channel_id', channelId);
+                                GM_setValue(`${kojima}_channel_id`, channelId);
                                 console.log('Updated Channel ID from fetch:', channelId);
-                                
+
                                 // Update UI if it exists
                                 const channelIdInput = document.getElementById('mj-channel-id-input');
                                 if (channelIdInput) {
@@ -181,16 +188,16 @@
                         }
                     }
                 }
-                
+
                 // Try to extract data from submit-jobs API
                 if (url.includes('/submit-jobs') && init && init.body) {
                     try {
                         const requestData = JSON.parse(init.body);
                         if (requestData.channelId && requestData.channelId !== channelId) {
                             channelId = requestData.channelId;
-                            GM_setValue('midjourney_channel_id', channelId);
+                            GM_setValue(`${kojima}_channel_id`, channelId);
                             console.log('Extracted Channel ID from fetch request:', channelId);
-                            
+
                             // Update UI if it exists
                             const channelIdInput = document.getElementById('mj-channel-id-input');
                             if (channelIdInput) {
@@ -203,22 +210,22 @@
                     }
                 }
             }
-            
+
             return fetchPromise;
         };
-        
+
         // Try to extract from JWT token if present
         extractUserIdFromJWT();
     }
-    
+
     /**
      * Extract user ID from JWT token in cookies
      */
     function extractUserIdFromJWT() {
         try {
             const jwtCookie = document.cookie.split('; ')
-                .find(row => row.startsWith('__Host-Midjourney.AuthUserTokenV3_i='));
-                
+                .find(row => row.startsWith(`__Host-${kojima}.AuthUserTokenV3_i=`));
+
             if (jwtCookie) {
                 const token = jwtCookie.split('=')[1];
                 // JWT tokens have 3 parts separated by dots
@@ -226,17 +233,17 @@
                 if (parts.length === 3) {
                     // The middle part contains the payload
                     const payload = JSON.parse(atob(parts[1]));
-                    if (payload.midjourney_id) {
-                        userId = payload.midjourney_id;
-                        GM_setValue('midjourney_user_id', userId);
+                    if (payload[`${kojima}_id`]) {
+                        userId = payload[`${kojima}_id`];
+                        GM_setValue(`${kojima}_user_id`, userId);
                         console.log('Extracted User ID from JWT:', userId);
-                        
+
                         // Update channel ID based on user ID
                         const newChannelId = `singleplayer_${userId}`;
                         channelId = newChannelId;
-                        GM_setValue('midjourney_channel_id', channelId);
+                        GM_setValue(`${kojima}_channel_id`, channelId);
                         console.log('Updated Channel ID from JWT:', channelId);
-                        
+
                         return true;
                     }
                 }
@@ -255,34 +262,34 @@
      */
     function processPromptTemplate(promptTemplate) {
         const processedPrompts = [];
-        
+
         // Check if the prompt contains variable substitution pattern
         const variableRegex = /\[(.*?)\]/g;
         const matches = [...promptTemplate.matchAll(variableRegex)];
-        
+
         if (matches.length === 0) {
             // No variables, just return the original prompt
             processedPrompts.push(promptTemplate);
             return processedPrompts;
         }
-        
+
         // Process each variable substitution
         let currentPrompts = [promptTemplate];
-        
+
         matches.forEach(match => {
             const variableOptions = match[1].split(',').map(option => option.trim());
             const newPrompts = [];
-            
+
             currentPrompts.forEach(prompt => {
                 variableOptions.forEach(option => {
                     const newPrompt = prompt.replace(match[0], option);
                     newPrompts.push(newPrompt);
                 });
             });
-            
+
             currentPrompts = newPrompts;
         });
-        
+
         return currentPrompts;
     }
 
@@ -294,12 +301,12 @@
     function validateParameters(prompt) {
         // Common parameter fixes
         let fixedPrompt = prompt;
-        
+
         // Fix version parameter (--v 0 is invalid, should be --v 6.0 or similar)
         if (fixedPrompt.includes('--v 0')) {
             fixedPrompt = fixedPrompt.replace('--v 0', `--v ${defaultVersion}`);
         }
-        
+
         // Ensure --v parameter is valid (should be 5.0, 5.1, 5.2, 6.0, 6.1, etc.)
         const versionMatch = fixedPrompt.match(/--v\s+(\S+)/);
         if (versionMatch) {
@@ -312,7 +319,7 @@
             // If no version parameter, add the default
             fixedPrompt = `${fixedPrompt} --v ${defaultVersion}`;
         }
-        
+
         // Fix stylize parameter (should be between 0-1000)
         const stylizeMatch = fixedPrompt.match(/--stylize\s+(\S+)/);
         if (stylizeMatch) {
@@ -322,7 +329,7 @@
                 fixedPrompt = fixedPrompt.replace(`--stylize ${stylizeMatch[1]}`, `--stylize ${defaultStylize}`);
             }
         }
-        
+
         // Fix chaos parameter (should be between 0-100)
         const chaosMatch = fixedPrompt.match(/--chaos\s+(\S+)/);
         if (chaosMatch) {
@@ -332,7 +339,7 @@
                 fixedPrompt = fixedPrompt.replace(`--chaos ${chaosMatch[1]}`, `--chaos ${defaultChaos}`);
             }
         }
-        
+
         return fixedPrompt;
     }
 
@@ -346,14 +353,14 @@
         if (!userToken || userToken.trim() === '') {
             throw new Error('Authentication token not set. Please go to Settings tab and paste your Midjourney cookie/token.');
         }
-        
+
         if (!channelId || channelId.trim() === '') {
             throw new Error('Channel ID not set. Please go to Settings tab and enter your Midjourney channel ID.');
         }
 
         // Check if token looks valid (contains some expected parts)
-        if (!userToken.includes('__Host-Midjourney') && !userToken.includes('cf_clearance')) {
-            console.warn('Warning: Your token may not be valid. It should contain authentication cookies from Midjourney.');
+        if (!userToken.includes(`__Host-${kojima}`) && !userToken.includes('cf_clearance')) {
+            console.warn(`Warning: Your token may not be valid. It should contain authentication cookies from ${kojima}.`);
         }
 
         // Validate and fix parameters
@@ -364,7 +371,7 @@
 
         // Extract cookies from the token
         const cookies = userToken;
-        
+
         // Prepare the payload
         const payload = {
             "f": {
@@ -399,8 +406,8 @@
                     headers: {
                         'accept': '*/*',
                         'content-type': 'application/json',
-                        'origin': 'https://www.midjourney.com',
-                        'referer': 'https://www.midjourney.com/explore',
+                        'origin': `https://www.${kojima}.com`,
+                        'referer': `https://www.${kojima}.com/explore`,
                         'x-csrf-protection': '1'
                     },
                     data: JSON.stringify(payload),
@@ -414,10 +421,10 @@
                                 reject(new Error(`API returned error ${response.status}: ${response.statusText}. Check console for details.`));
                                 return;
                             }
-                            
+
                             const result = JSON.parse(response.responseText);
                             console.log('API Response Data:', result);
-                            
+
                             // Check for API-level errors
                             if (result.failure && result.failure.length > 0) {
                                 const failures = result.failure;
@@ -426,7 +433,7 @@
                                 reject(new Error(`API reported errors: ${errorMessages}`));
                                 return;
                             }
-                            
+
                             resolve(result);
                         } catch (error) {
                             console.error('Error parsing API response:', error, response);
@@ -467,7 +474,7 @@
             stopQueueProcessing();
             return;
         }
-        
+
         if (!channelId || channelId.trim() === '') {
             updateStatus('Error: Channel ID not set. Please go to Settings tab and enter your Midjourney channel ID.');
             stopQueueProcessing();
@@ -481,20 +488,20 @@
         try {
             const prompt = promptQueue.shift();
             updateStatus(`Submitting prompt: ${prompt}`);
-            
+
             // Add default parameters if not already included
             const fullPrompt = prompt.includes('--') ? prompt : `${prompt} ${defaultParams}`;
-            
+
             console.log('Attempting to submit prompt:', fullPrompt);
             const result = await submitPrompt(fullPrompt);
-            
+
             updateStatus(`Prompt submitted successfully: ${prompt}`);
             console.log('Midjourney API response:', result);
-            
+
             // Use random delay between submissions
             const delay = getRandomDelay();
             updateStatus(`Waiting ${(delay/1000).toFixed(1)} seconds before next submission...`);
-            
+
             setTimeout(() => {
                 isProcessing = false;
                 processQueue();
@@ -515,12 +522,12 @@
             updateStatus('Error: Authentication token not set. Please go to Settings tab and paste your Midjourney cookie/token.');
             return;
         }
-        
+
         if (!channelId || channelId.trim() === '') {
             updateStatus('Error: Channel ID not set. Please go to Settings tab and enter your Midjourney channel ID.');
             return;
         }
-        
+
         if (!processingInterval) {
             processQueue();
             processingInterval = setInterval(processQueue, 5000);
@@ -559,18 +566,18 @@
         if (userId) {
             return `singleplayer_${userId}`;
         }
-        
+
         // Try to extract from cookies or page content
         const cookieMatch = document.cookie.match(/channelId=([^;]+)/);
         if (cookieMatch) {
             return cookieMatch[1];
         }
-        
+
         // Try to extract from JWT token
         if (extractUserIdFromJWT()) {
             return channelId;
         }
-        
+
         // Default to the one from the example
         return "singleplayer_96da26f7-3a77-43a4-a725-7b141a4aedba";
     }
@@ -579,22 +586,22 @@
      * Save settings to GM storage
      */
     function saveSettings() {
-        GM_setValue('midjourney_token', userToken);
-        GM_setValue('midjourney_channel_id', channelId);
-        GM_setValue('midjourney_user_id', userId);
-        GM_setValue('midjourney_default_params', defaultParams);
-        GM_setValue('midjourney_min_delay', minDelay);
-        GM_setValue('midjourney_max_delay', maxDelay);
-        
+        GM_setValue(`${kojima}_token`, userToken);
+        GM_setValue(`${kojima}_channel_id`, channelId);
+        GM_setValue(`${kojima}_user_id`, userId);
+        GM_setValue(`${kojima}_default_params`, defaultParams);
+        GM_setValue(`${kojima}_min_delay`, minDelay);
+        GM_setValue(`${kojima}_max_delay`, maxDelay);
+
         // Save request parameters
-        GM_setValue('midjourney_request_mode', requestMode);
-        GM_setValue('midjourney_request_private', requestPrivate);
-        GM_setValue('midjourney_default_version', defaultVersion);
-        GM_setValue('midjourney_default_stylize', defaultStylize);
-        GM_setValue('midjourney_default_chaos', defaultChaos);
-        GM_setValue('midjourney_default_aspect', defaultAspectRatio);
-        GM_setValue('midjourney_default_quality', defaultQuality);
-        
+        GM_setValue(`${kojima}_request_mode`, requestMode);
+        GM_setValue(`${kojima}_request_private`, requestPrivate);
+        GM_setValue(`${kojima}_default_version`, defaultVersion);
+        GM_setValue(`${kojima}_default_stylize`, defaultStylize);
+        GM_setValue(`${kojima}_default_chaos`, defaultChaos);
+        GM_setValue(`${kojima}_default_aspect`, defaultAspectRatio);
+        GM_setValue(`${kojima}_default_quality`, defaultQuality);
+
         updateStatus('Settings saved');
     }
 
@@ -604,7 +611,7 @@
     function createUI() {
             // Create main container with cyberpunk theme
         const container = document.createElement('div');
-        container.id = 'midjourney-prompt-manager';
+        container.id = `${kojima}-prompt-manager`;
         Object.assign(container.style, {
             position: 'fixed',
             top: '20px',
@@ -683,14 +690,14 @@
                 tab.style.letterSpacing = '1px';
                 tab.style.fontSize = '12px';
             tab.dataset.tab = tabName.toLowerCase();
-            
+
             // Create content div for this tab
             const content = document.createElement('div');
             content.id = `mj-tab-${tabName.toLowerCase()}`;
             content.style.display = tabName === 'Prompts' ? 'block' : 'none';
             contentWrapper.appendChild(content);
             tabContents[tabName.toLowerCase()] = content;
-            
+
             tab.addEventListener('click', () => {
                 // Deactivate all tabs
                 tabsContainer.querySelectorAll('div').forEach(t => {
@@ -699,25 +706,25 @@
                         t.style.color = '#e6e6ff';
                         t.style.textShadow = 'none';
                 });
-                
+
                 // Hide all content
                 Object.values(tabContents).forEach(c => {
                     c.style.display = 'none';
                 });
-                
+
                 // Activate clicked tab
                     tab.style.borderBottom = '2px solid #ff003c';
                     tab.style.backgroundColor = '#15151f';
                     tab.style.color = '#ffdf00';
                     tab.style.textShadow = '0 0 5px #ffdf00';
-                
+
                 // Show corresponding content
                 tabContents[tab.dataset.tab].style.display = 'block';
             });
-            
+
             tabsContainer.appendChild(tab);
         });
-        
+
         // Activate first tab
             tabsContainer.querySelector('div').style.borderBottom = '2px solid #ff003c';
             tabsContainer.querySelector('div').style.backgroundColor = '#15151f';
@@ -726,7 +733,7 @@
 
         // Prompts tab content
         const promptsTab = tabContents['prompts'];
-        
+
         // Prompt input area
         const promptInput = document.createElement('textarea');
         promptInput.placeholder = 'Enter prompts here (one per line)\nUse [option1,option2,option3] for variables';
@@ -776,18 +783,18 @@
                     transition: 'all 0.2s ease',
                     boxShadow: '0 0 5px rgba(255,223,0,0.5)'
                 });
-                
+
                 // Add hover effects
                 button.addEventListener('mouseover', () => {
                     button.style.backgroundColor = '#fff000';
                     button.style.boxShadow = '0 0 10px rgba(255,223,0,0.8)';
                 });
-                
+
                 button.addEventListener('mouseout', () => {
                     button.style.backgroundColor = '#ffdf00';
                     button.style.boxShadow = '0 0 5px rgba(255,223,0,0.5)';
                 });
-                
+
             button.addEventListener('click', onClick);
             return button;
         };
@@ -805,43 +812,43 @@
                 updateStatus('Error: Authentication token not set. Please go to Settings tab and paste your Midjourney cookie/token.');
                 return;
             }
-            
+
             if (!channelId || channelId.trim() === '') {
                 updateStatus('Error: Channel ID not set. Please go to Settings tab and enter your Midjourney channel ID.');
                 return;
             }
 
             console.log('Processing prompts from input:', inputText);
-            
+
             // Split input by lines
             const promptTemplates = inputText.split('\n').filter(line => line.trim() !== '');
             console.log('Prompt templates:', promptTemplates);
-            
+
             // Process each template for variable substitution
             let allPrompts = [];
             promptTemplates.forEach(template => {
                 const processed = processPromptTemplate(template);
                 allPrompts = [...allPrompts, ...processed];
             });
-            
+
             // Shuffle the prompts before adding to queue
             allPrompts = shuffleArray(allPrompts);
-            
+
             console.log('All processed prompts (randomized):', allPrompts);
-            
+
             // Add to queue
             promptQueue = [...promptQueue, ...allPrompts];
-            
+
             updateStatus(`Added ${allPrompts.length} randomized prompts to queue`);
             console.log(`Added ${allPrompts.length} randomized prompts to queue. Starting processing...`);
             startQueueProcessing();
         });
-        
+
         const clearButton = createButton('Clear Queue', () => {
             promptQueue = [];
             updateStatus('Queue cleared');
         });
-        
+
         buttonsContainer.appendChild(processButton);
         buttonsContainer.appendChild(clearButton);
 
@@ -862,7 +869,7 @@
             // Queue display with cyberpunk style
         const queueContainer = document.createElement('div');
         queueContainer.style.marginTop = '10px';
-        
+
         const queueTitle = document.createElement('div');
             queueTitle.textContent = '> QUEUE STATUS';
         queueTitle.style.fontWeight = 'bold';
@@ -870,7 +877,7 @@
             queueTitle.style.color = '#00ff9d';
             queueTitle.style.letterSpacing = '1px';
         queueContainer.appendChild(queueTitle);
-        
+
         const queueDisplay = document.createElement('div');
         queueDisplay.id = 'mj-queue';
         queueDisplay.style.maxHeight = '150px';
@@ -882,7 +889,7 @@
             queueDisplay.style.fontFamily = 'monospace';
             queueDisplay.style.border = '1px solid #ff003c';
         queueContainer.appendChild(queueDisplay);
-        
+
         promptsTab.appendChild(queueContainer);
 
             // Add landscape prompts button with cyberpunk theme
@@ -927,10 +934,10 @@
                     "A coastline where the ocean meets a desert, creating glass formations along the shore",
                     "A valley where gravity works sideways, with waterfalls flowing horizontally across cliffs"
                 ];
-                
+
                 // Get any additional parameters from the prompt input
                 const additionalParams = promptInput.value.trim();
-                
+
                 // Process each landscape prompt and add it to the queue
                 let processedPrompts = [];
                 landscapePrompts.forEach(prompt => {
@@ -938,38 +945,38 @@
                     const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
                     processedPrompts.push(fullPrompt);
                 });
-                
+
                 // Shuffle the prompts before adding to queue
                 processedPrompts = shuffleArray(processedPrompts);
-                
+
                 // Add all processed prompts to the queue
                 promptQueue = [...promptQueue, ...processedPrompts];
-                
+
                 // Update status
                 updateStatus(`Added ${processedPrompts.length} randomized landscape prompts to queue`);
                 console.log(`Added ${processedPrompts.length} randomized landscape prompts to queue. Starting processing...`);
-                
+
                 // Start processing if not already doing so
                 startQueueProcessing();
             });
-            
+
             landscapePromptsButton.style.backgroundColor = '#00ff9d';
             landscapePromptsButton.style.boxShadow = '0 0 5px rgba(0,255,157,0.5)';
             landscapePromptsButton.style.width = '100%';
             landscapePromptsButton.style.marginTop = '10px';
             landscapePromptsButton.style.marginBottom = '5px';
-            
+
             // Update hover effects for this specific button
             landscapePromptsButton.addEventListener('mouseover', () => {
                 landscapePromptsButton.style.backgroundColor = '#00ffb3';
                 landscapePromptsButton.style.boxShadow = '0 0 10px rgba(0,255,157,0.8)';
             });
-            
+
             landscapePromptsButton.addEventListener('mouseout', () => {
                 landscapePromptsButton.style.backgroundColor = '#00ff9d';
                 landscapePromptsButton.style.boxShadow = '0 0 5px rgba(0,255,157,0.5)';
             });
-            
+
             promptsTab.insertBefore(landscapePromptsButton, statusDisplay);
 
             // Add validation prompts button with cyberpunk theme
@@ -1019,10 +1026,10 @@
                     "A magician pulling impossible objects from an ordinary hat on stage",
                     "A character stepping between parallel universes with half their body in each world"
                 ];
-                
+
                 // Get any additional parameters from the prompt input
                 const additionalParams = promptInput.value.trim();
-                
+
                 // Process each validation prompt and add it to the queue
                 let processedPrompts = [];
                 validationPrompts.forEach(prompt => {
@@ -1030,38 +1037,38 @@
                     const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
                     processedPrompts.push(fullPrompt);
                 });
-                
+
                 // Shuffle the prompts before adding to queue
                 processedPrompts = shuffleArray(processedPrompts);
-                
+
                 // Add all processed prompts to the queue
                 promptQueue = [...promptQueue, ...processedPrompts];
-                
+
                 // Update status
                 updateStatus(`Added ${processedPrompts.length} randomized validation prompts to queue`);
                 console.log(`Added ${processedPrompts.length} randomized validation prompts to queue. Starting processing...`);
-                
+
                 // Start processing if not already doing so
                 startQueueProcessing();
             });
-            
+
             validationPromptsButton.style.backgroundColor = '#1a75ff';
             validationPromptsButton.style.boxShadow = '0 0 5px rgba(26,117,255,0.5)';
             validationPromptsButton.style.width = '100%';
             validationPromptsButton.style.marginTop = '5px';
             validationPromptsButton.style.marginBottom = '10px';
-            
+
             // Update hover effects for this specific button
             validationPromptsButton.addEventListener('mouseover', () => {
                 validationPromptsButton.style.backgroundColor = '#4a8fff';
                 validationPromptsButton.style.boxShadow = '0 0 10px rgba(26,117,255,0.8)';
             });
-            
+
             validationPromptsButton.addEventListener('mouseout', () => {
                 validationPromptsButton.style.backgroundColor = '#1a75ff';
                 validationPromptsButton.style.boxShadow = '0 0 5px rgba(26,117,255,0.5)';
             });
-            
+
             promptsTab.insertBefore(validationPromptsButton, statusDisplay);
 
             // Add everyday things prompts button with cyberpunk theme
@@ -1140,10 +1147,10 @@
                     "A bird's nest constructed with twigs, string, and colorful bits of plastic waste",
                     "A handwritten recipe card stained with ingredients passed down through generations"
                 ];
-                
+
                 // Get any additional parameters from the prompt input
                 const additionalParams = promptInput.value.trim();
-                
+
                 // Process each everyday object prompt and add it to the queue
                 let processedPrompts = [];
                 everydayPrompts.forEach(prompt => {
@@ -1151,38 +1158,38 @@
                     const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
                     processedPrompts.push(fullPrompt);
                 });
-                
+
                 // Shuffle the prompts before adding to queue
                 processedPrompts = shuffleArray(processedPrompts);
-                
+
                 // Add all processed prompts to the queue
                 promptQueue = [...promptQueue, ...processedPrompts];
-                
+
                 // Update status
                 updateStatus(`Added ${processedPrompts.length} randomized everyday things prompts to queue`);
                 console.log(`Added ${processedPrompts.length} randomized everyday things prompts to queue. Starting processing...`);
-                
+
                 // Start processing if not already doing so
                 startQueueProcessing();
             });
-            
+
             everydayPromptsButton.style.backgroundColor = '#ff6b6b';
             everydayPromptsButton.style.boxShadow = '0 0 5px rgba(255,107,107,0.5)';
             everydayPromptsButton.style.width = '100%';
             everydayPromptsButton.style.marginTop = '5px';
             everydayPromptsButton.style.marginBottom = '10px';
-            
+
             // Update hover effects for this specific button
             everydayPromptsButton.addEventListener('mouseover', () => {
                 everydayPromptsButton.style.backgroundColor = '#ff8585';
                 everydayPromptsButton.style.boxShadow = '0 0 10px rgba(255,107,107,0.8)';
             });
-            
+
             everydayPromptsButton.addEventListener('mouseout', () => {
                 everydayPromptsButton.style.backgroundColor = '#ff6b6b';
                 everydayPromptsButton.style.boxShadow = '0 0 5px rgba(255,107,107,0.5)';
             });
-            
+
             promptsTab.insertBefore(everydayPromptsButton, statusDisplay);
 
             // Add character prompts button with cyberpunk theme
@@ -1230,10 +1237,10 @@
                     "A cyborg monk in meditation as digital and organic energies flow around them",
                     "A nomadic desert dweller with weather-beaten skin collecting water from a fog harvester"
                 ];
-                
+
                 // Get any additional parameters from the prompt input
                 const additionalParams = promptInput.value.trim();
-                
+
                 // Process each character prompt and add it to the queue
                 let processedPrompts = [];
                 characterPrompts.forEach(prompt => {
@@ -1241,57 +1248,57 @@
                     const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
                     processedPrompts.push(fullPrompt);
                 });
-                
+
                 // Shuffle the prompts before adding to queue
                 processedPrompts = shuffleArray(processedPrompts);
-                
+
                 // Add all processed prompts to the queue
                 promptQueue = [...promptQueue, ...processedPrompts];
-                
+
                 // Update status
                 updateStatus(`Added ${processedPrompts.length} randomized character prompts to queue`);
                 console.log(`Added ${processedPrompts.length} randomized character prompts to queue. Starting processing...`);
-                
+
                 // Start processing if not already doing so
                 startQueueProcessing();
             });
-            
+
             characterPromptsButton.style.backgroundColor = '#9b59b6';
             characterPromptsButton.style.boxShadow = '0 0 5px rgba(155,89,182,0.5)';
             characterPromptsButton.style.width = '100%';
             characterPromptsButton.style.marginTop = '5px';
             characterPromptsButton.style.marginBottom = '10px';
-            
+
             // Update hover effects for this specific button
             characterPromptsButton.addEventListener('mouseover', () => {
                 characterPromptsButton.style.backgroundColor = '#a66bbe';
                 characterPromptsButton.style.boxShadow = '0 0 10px rgba(155,89,182,0.8)';
             });
-            
+
             characterPromptsButton.addEventListener('mouseout', () => {
                 characterPromptsButton.style.backgroundColor = '#9b59b6';
                 characterPromptsButton.style.boxShadow = '0 0 5px rgba(155,89,182,0.5)';
             });
-            
+
             promptsTab.insertBefore(characterPromptsButton, statusDisplay);
 
             // Settings tab content with cyberpunk theme
         const settingsTab = tabContents['settings'];
-        
+
         // Add help text at the top of settings
         const settingsHelp = document.createElement('div');
         settingsHelp.innerHTML = `
                 <div style="margin-bottom: 15px; padding: 10px; background-color: #15151f; border-radius: 4px; border-left: 3px solid #ff003c;">
                     <strong style="color: #ffdf00; text-transform: uppercase; letter-spacing: 1px;">⚠️ Required Settings</strong>
                     <p style="margin-top: 5px; font-size: 12px; line-height: 1.4; color: #e6e6ff;">
-                    You must configure both the Midjourney Cookie/Token and Channel ID before submitting prompts.
+                    You must configure both the ${kojima} Cookie/Token and Channel ID before submitting prompts.
                     <br><br>
                         <strong style="color: #00ff9d;">Auto-Detection:</strong> The script will try to automatically detect your User ID and Channel ID from network requests.
-                    Simply browse Midjourney normally, and the script will capture this information.
+                    Simply browse ${kojima} normally, and the script will capture this information.
                     <br><br>
                         <strong style="color: #00ff9d;">Manual Setup:</strong>
                     <ol style="margin-top: 5px; padding-left: 20px; font-size: 12px;">
-                        <li>Open DevTools (F12) in your browser while on Midjourney</li>
+                        <li>Open DevTools (F12) in your browser while on ${kojima}</li>
                         <li>Go to the Network tab</li>
                         <li>Look for requests to "/users/queue?userId=" or "/submit-jobs"</li>
                         <li>The userId parameter contains your User ID</li>
@@ -1301,12 +1308,12 @@
             </div>
         `;
         settingsTab.appendChild(settingsHelp);
-        
+
             // Create a form field with cyberpunk theme
         const createFormField = (labelText, inputElement, description = '') => {
             const fieldContainer = document.createElement('div');
             fieldContainer.style.marginBottom = '12px';
-            
+
             const label = document.createElement('label');
             label.textContent = labelText;
             label.style.display = 'block';
@@ -1316,9 +1323,9 @@
                 label.style.letterSpacing = '1px';
                 label.style.color = '#00ff9d';
             fieldContainer.appendChild(label);
-            
+
             fieldContainer.appendChild(inputElement);
-            
+
             if (description) {
                 const desc = document.createElement('small');
                 desc.textContent = description;
@@ -1327,7 +1334,7 @@
                 desc.style.marginTop = '3px';
                 fieldContainer.appendChild(desc);
             }
-            
+
             return fieldContainer;
         };
 
@@ -1349,25 +1356,25 @@
                 fontSize: '12px',
                 boxShadow: 'inset 0 0 5px rgba(255,0,60,0.5)'
         });
-            
+
         // Update both input and change events to catch all changes
         tokenInput.addEventListener('input', () => {
             userToken = tokenInput.value.trim();
                 tokenInput.style.border = userToken ? '1px solid #00ff9d' : '1px solid #ff003c';
         });
-            
+
         tokenInput.addEventListener('change', () => {
             userToken = tokenInput.value.trim();
                 tokenInput.style.border = userToken ? '1px solid #00ff9d' : '1px solid #ff003c';
         });
-            
+
         // Add a blur event to validate when focus leaves the field
         tokenInput.addEventListener('blur', () => {
             userToken = tokenInput.value.trim();
                 tokenInput.style.border = userToken ? '1px solid #00ff9d' : '1px solid #ff003c';
         });
-            
-        settingsTab.appendChild(createFormField('Midjourney Cookie/Token (Required)', tokenInput, 'Paste your Midjourney authentication cookie here'));
+
+        settingsTab.appendChild(createFormField(`${kojima} Cookie/Token (Required)`, tokenInput, `Paste your ${kojima} authentication cookie here`));
 
         // User ID display (read-only)
         const userIdInput = document.createElement('input');
@@ -1420,17 +1427,17 @@
         // Auto-detect button
         const autoDetectButton = createButton('Auto-Detect Settings', () => {
             updateStatus('Waiting for Midjourney network activity...');
-            
+
             // Try to extract from cookies
             const cookies = document.cookie;
-            if (cookies.includes('__Host-Midjourney.AuthUserTokenV3') || 
+            if (cookies.includes('__Host-Midjourney.AuthUserTokenV3') ||
                 cookies.includes('cf_clearance')) {
                 userToken = cookies;
                 tokenInput.value = userToken;
                 tokenInput.style.border = '1px solid #4a5';
                 updateStatus('Token extracted from cookies. Waiting for User ID...');
             }
-            
+
             // Try to extract from JWT
             if (extractUserIdFromJWT()) {
                 userIdInput.value = userId;
@@ -1494,7 +1501,7 @@
                 }
             }
         });
-        
+
         const minDelayField = createFormField('Min Delay (ms)', minDelayInput, '');
         minDelayField.style.flex = '1';
         delayContainer.appendChild(minDelayField);
@@ -1521,7 +1528,7 @@
                 maxDelayInput.value = maxDelay;
             }
         });
-        
+
         const maxDelayField = createFormField('Max Delay (ms)', maxDelayInput, '');
         maxDelayField.style.flex = '1';
         delayContainer.appendChild(maxDelayField);
@@ -1542,15 +1549,15 @@
                 tokenInput.style.border = '1px solid #ff5555';
                 return;
             }
-            
+
             if (!channelId || channelId.trim() === '') {
                 updateStatus('Error: Channel ID not set. Please enter your Midjourney channel ID.');
                 channelIdInput.style.border = '1px solid #ff5555';
                 return;
             }
-            
+
             updateStatus('Testing connection to Midjourney API...');
-            
+
             try {
                 // Use a simple test prompt
                 const testPrompt = "test connection --test --v 0";
@@ -1587,11 +1594,11 @@
             console.log('Queue Length:', promptQueue.length);
             console.log('Is Processing:', isProcessing);
             console.log('Processing Interval:', !!processingInterval);
-            
-            // Test direct fetch to Midjourney
+
+            // Test direct fetch to MJ
             try {
-                updateStatus('Testing direct fetch to Midjourney API...');
-                
+                updateStatus('Testing direct fetch to MJ API...');
+
                 // Use the current default version from settings
                 const testPrompt = `debug test --v ${defaultVersion}`;
                 const testPayload = {
@@ -1612,26 +1619,26 @@
                     "t": "imagine",
                     "prompt": testPrompt
                 };
-                
+
                 console.log('Sending direct fetch with payload:', testPayload);
-                
+
                 const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: {
                         'accept': '*/*',
                         'content-type': 'application/json',
-                        'origin': 'https://www.midjourney.com',
-                        'referer': 'https://www.midjourney.com/explore',
+                        'origin': `https://www.${kojima}.com`,
+                        'referer': `https://www.${kojima}.com/explore`,
                         'x-csrf-protection': '1',
                         'cookie': userToken
                     },
                     body: JSON.stringify(testPayload)
                 });
-                
+
                 console.log('Direct fetch response status:', response.status);
                 const responseData = await response.text();
                 console.log('Direct fetch response:', responseData);
-                
+
                 try {
                     const jsonResponse = JSON.parse(responseData);
                     if (jsonResponse.failure && jsonResponse.failure.length > 0) {
@@ -1649,7 +1656,7 @@
                 updateStatus(`Direct fetch test failed: ${error.message}`);
             }
         });
-        
+
         debugButton.style.backgroundColor = '#555';
         debugButton.style.marginTop = '10px';
         promptsTab.appendChild(debugButton);
@@ -1703,8 +1710,8 @@
                 if (promptQueue.length === 0) {
                         queueElement.innerHTML = '<em style="color: #8a8aaa;">Queue is empty</em>';
                 } else {
-                    queueElement.innerHTML = promptQueue.map((prompt, index) => 
-                            `<div style="margin-bottom:5px;border-bottom:1px solid #ff003c;padding-bottom:5px;color:#00ff9d;" 
+                    queueElement.innerHTML = promptQueue.map((prompt, index) =>
+                            `<div style="margin-bottom:5px;border-bottom:1px solid #ff003c;padding-bottom:5px;color:#00ff9d;"
                                 title="${prompt}">
                                 > ${index + 1}. ${prompt.length > 40 ? prompt.substring(0, 40) + '...' : prompt}
                         </div>`
