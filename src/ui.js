@@ -1283,8 +1283,7 @@ MJ.UI = {
         // Add prompt category buttons
         const loadPromptCategories = async () => {
             try {
-                const response = await fetch(GM_getResourceURL('prompt_categories'));
-                const categories = await response.json();
+                const categories = JSON.parse(GM_getResourceText('prompt_categories'));
                 
                 Object.entries(categories).forEach(([key, category]) => {
                     const button = createButton(`Queue ${category.name}`, () => {
