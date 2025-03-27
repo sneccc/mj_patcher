@@ -313,7 +313,8 @@ MJ.UI = {
                         category.prompts.forEach(prompt => {
                             // If there are additional parameters, append them to the prompt
                             const fullPrompt = additionalParams ? `${prompt} ${additionalParams}` : prompt;
-                            processedPrompts.push(fullPrompt);
+                            // Process wildcards for each prompt
+                            processedPrompts.push(MJ.Utils.processWildcards(fullPrompt));
                         });
 
                         // Shuffle the prompts before adding to queue
