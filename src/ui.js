@@ -146,7 +146,13 @@ MJ.UI = {
 
         // Example and help text
         const helpText = document.createElement('div');
-        helpText.innerHTML = '<small>Example: "a photo of [cat,dog,bird] in [forest,beach,mountain]"</small>';
+        helpText.innerHTML = `
+            <small>
+                <div>Example with variables: "a photo of [cat,dog,bird] in [forest,beach,mountain]"</div>
+                <div>Example with wildcards: "a __color__ __material__ object in a __location__ during __time__"</div>
+                <div>Available wildcards: color, material, emotion, weather, time, location, style, lighting, camera</div>
+            </small>
+        `;
         helpText.style.color = '#8a8aaa';
         helpText.style.marginBottom = '10px';
         promptsTab.appendChild(helpText);

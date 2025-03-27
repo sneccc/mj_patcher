@@ -21,13 +21,35 @@ MJ.Utils = {
         return shuffled;
     },
 
+    getRandomValue: (array) => {
+        return array[Math.floor(Math.random() * array.length)];
+    },
+
+    processWildcards: (prompt) => {
+        const wildcards = JSON.parse(GM_getResourceText('wildcards'));
+        const wildcardRegex = /__(\w+)__/g;
+        let processedPrompt = prompt;
+        let match;
+
+        while ((match = wildcardRegex.exec(prompt)) !== null) {
+            const wildcardName = match[1];
+            if (wildcards[wildcardName] && wildcards[wildcardName].values) {
+                const randomValue = MJ.Utils.getRandomValue(wildcards[wildcardName].values);
+                processedPrompt = processedPrompt.replace(match[0], randomValue);
+            }
+        }
+
+        return processedPrompt;
+    },
+
     processPromptTemplate: (promptTemplate) => {
         const processedPrompts = [];
         const variableRegex = /\[(.*?)\]/g;
         const matches = [...promptTemplate.matchAll(variableRegex)];
 
         if (matches.length === 0) {
-            processedPrompts.push(promptTemplate);
+            // If no variables, just process wildcards
+            processedPrompts.push(MJ.Utils.processWildcards(promptTemplate));
             return processedPrompts;
         }
 
@@ -39,7 +61,8 @@ MJ.Utils = {
             currentPrompts.forEach(prompt => {
                 variableOptions.forEach(option => {
                     const newPrompt = prompt.replace(match[0], option);
-                    newPrompts.push(newPrompt);
+                    // Process wildcards after variable substitution
+                    newPrompts.push(MJ.Utils.processWildcards(newPrompt));
                 });
             });
 

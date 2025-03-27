@@ -11,6 +11,7 @@
 // @grant        GM_getResourceURL
 // @grant        GM_getResourceText
 // @resource     prompt_categories https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/prompt_categories.json
+// @resource     wildcards https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/wildcards.json
 // @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/utils.js
 // @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/api.js
 // @require      https://raw.githubusercontent.com/sneccc/mj_patcher/refs/heads/main/src/queue.js
