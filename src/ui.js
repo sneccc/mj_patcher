@@ -251,6 +251,98 @@ MJ.UI = {
         buttonsContainer.appendChild(processButton);
         buttonsContainer.appendChild(clearButton);
 
+        // --- START BATCH PROCESSING ELEMENTS ---
+        const batchContainer = document.createElement('div');
+        batchContainer.style.display = 'flex';
+        batchContainer.style.gap = '8px';
+        batchContainer.style.marginTop = '8px'; // Add some space above
+        batchContainer.style.alignItems = 'center';
+
+        const batchLabel = document.createElement('label');
+        batchLabel.textContent = 'Repeat:';
+        batchLabel.style.fontSize = '12px';
+        batchLabel.style.color = '#aaa';
+
+        const batchCountInput = document.createElement('input');
+        batchCountInput.type = 'number';
+        batchCountInput.value = '5'; // Default repeat count
+        batchCountInput.min = '1';
+        Object.assign(batchCountInput.style, {
+            width: '50px', // Smaller width for number input
+            padding: '6px 8px',
+            backgroundColor: '#15151f',
+            color: '#e6e6ff',
+            border: '1px solid #ff003c',
+            borderRadius: '4px',
+            fontFamily: 'monospace',
+            fontSize: '12px',
+            boxShadow: 'inset 0 0 5px rgba(255,0,60,0.5)'
+        });
+
+        const batchProcessButton = createButton('Batch Process', () => {
+            const inputText = promptInput.value.trim();
+            const repeatCount = parseInt(batchCountInput.value, 10);
+
+            if (!inputText) {
+                MJ.UI.updateStatus('Please enter at least one prompt');
+                return;
+            }
+            if (isNaN(repeatCount) || repeatCount < 1) {
+                 MJ.UI.updateStatus('Please enter a valid number of repetitions (>= 1)');
+                 batchCountInput.value = '1'; // Reset to minimum valid
+                 return;
+            }
+
+            // Validate settings before processing
+            if (!MJ.API.settings.userToken || MJ.API.settings.userToken.trim() === '') {
+                MJ.UI.updateStatus('Error: Authentication token not set. Go to Settings tab.');
+                return;
+            }
+            if (!MJ.API.settings.channelId || MJ.API.settings.channelId.trim() === '') {
+                MJ.UI.updateStatus('Error: Channel ID not set. Go to Settings tab.');
+                return;
+            }
+
+            console.log(`Batch processing ${repeatCount} times for input:`, inputText);
+
+            // Split input by lines
+            const promptTemplates = inputText.split('\n').filter(line => line.trim() !== '');
+            console.log('Prompt templates:', promptTemplates);
+
+            // Process each template N times for variable substitution
+            let allBatchPrompts = [];
+            for (let i = 0; i < repeatCount; i++) {
+                promptTemplates.forEach(template => {
+                    // Important: Process template anew each time to get different wildcard substitutions if applicable
+                    const processed = MJ.Utils.processPromptTemplate(template);
+                    allBatchPrompts = [...allBatchPrompts, ...processed];
+                });
+            }
+
+            // Shuffle the entire batch of prompts before adding to queue
+            allBatchPrompts = MJ.Utils.shuffleArray(allBatchPrompts);
+
+            console.log(`All processed batch prompts (randomized, ${allBatchPrompts.length} total):`, allBatchPrompts);
+
+            // Add to queue
+            MJ.Queue.promptQueue = [...MJ.Queue.promptQueue, ...allBatchPrompts];
+
+            MJ.UI.updateStatus(`Added ${allBatchPrompts.length} randomized prompts (from ${repeatCount} batches) to queue`);
+            console.log(`Added ${allBatchPrompts.length} randomized prompts to queue. Starting processing...`);
+            MJ.Queue.startQueueProcessing();
+        });
+
+        // Style batch button to be less prominent or different? Maybe smaller flex?
+        batchProcessButton.style.flex = '1'; // Match other buttons for now
+
+        batchContainer.appendChild(batchLabel);
+        batchContainer.appendChild(batchCountInput);
+        batchContainer.appendChild(batchProcessButton); // Add button to batch container
+
+        promptsTab.appendChild(batchContainer); // Add batch container to the tab
+
+        // --- END BATCH PROCESSING ELEMENTS ---
+
         // Status display with cyberpunk style
         const statusDisplay = document.createElement('div');
         statusDisplay.id = 'mj-status';
