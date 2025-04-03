@@ -5,7 +5,9 @@
         "values": [
             "red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black", "white",
             "gold", "silver", "bronze", "crimson", "navy", "emerald", "amber", "violet", "coral", "gray",
-            "azure", "scarlet", "olive", "indigo", "maroon", "teal", "lime", "magenta", "cyan", "beige"
+            "azure", "scarlet", "olive", "indigo", "maroon", "teal", "lime", "magenta", "cyan", "beige",
+            "turquoise", "lavender", "chartreuse", "ivory", "pewter", "taupe", "rose gold", "fuchsia", "ochre", "celadon", 
+            "periwinkle", "sapphire", "ruby", "citrine", "amethyst", "aquamarine", "topaz", "garnet", "onyx", "pearl"
         ]
     },
     "material": {
@@ -14,7 +16,9 @@
         "values": [
             "wood", "metal", "glass", "plastic", "stone", "leather", "fabric", "ceramic", "crystal", "paper",
             "gold", "silver", "bronze", "copper", "steel", "marble", "granite", "silk", "cotton", "wool",
-            "rubber", "plastic", "concrete", "bamboo", "ivory", "jade", "obsidian", "pearl", "diamond", "coral"
+            "rubber", "plastic", "concrete", "bamboo", "ivory", "jade", "obsidian", "pearl", "diamond", "coral",
+            "brass", "titanium", "platinum", "aluminum", "nickel", "tin", "lead", "zinc", "quartz", "clay", 
+            "porcelain", "earthenware", "terracotta", "plaster", "resin", "epoxy", "vinyl", "acrylic", "nylon", "polyester"
         ]
     },
     "emotion": {
@@ -23,7 +27,9 @@
         "values": [
             "happy", "sad", "angry", "excited", "peaceful", "anxious", "confident", "confused", "proud", "shy",
             "joyful", "melancholic", "furious", "ecstatic", "serene", "worried", "brave", "perplexed", "satisfied", "nervous",
-            "delighted", "gloomy", "irate", "elated", "tranquil", "fearful", "courageous", "bewildered", "content", "timid"
+            "delighted", "gloomy", "irate", "elated", "tranquil", "fearful", "courageous", "bewildered", "content", "timid",
+            "amused", "bored", "calm", "curious", "desperate", "disappointed", "disgusted", "envious", "grateful", "guilty", 
+            "hopeful", "humiliated", "hurt", "intrigued", "lonely", "optimistic", "overwhelmed", "relieved", "skeptical", "surprised"
         ]
     },
     "weather": {
@@ -32,7 +38,9 @@
         "values": [
             "sunny", "rainy", "cloudy", "stormy", "foggy", "windy", "snowy", "misty", "clear", "overcast",
             "scorching", "drizzling", "partly cloudy", "thunderous", "hazy", "breezy", "blizzard", "humid", "bright", "gloomy",
-            "sweltering", "pouring", "cloudy with a chance of rain", "tempestuous", "smoggy", "gusty", "snowstorm", "muggy", "radiant", "dull"
+            "sweltering", "pouring", "cloudy with a chance of rain", "tempestuous", "smoggy", "gusty", "snowstorm", "muggy", "radiant", "dull",
+            "downpour", "gale", "heatwave", "sleet", "hail", "balmy", "crisp", "damp", "dry", "freezing", 
+            "mild", "oppressive", "refreshing", "sultry", "temperate", "turbulent", "visibility", "dew point", "pressure", "front"
         ]
     },
     "time": {
@@ -41,7 +49,9 @@
         "values": [
             "dawn", "morning", "noon", "afternoon", "dusk", "night", "midnight", "sunrise", "sunset", "twilight",
             "early morning", "late morning", "early afternoon", "late afternoon", "early evening", "late evening", "early night", "late night", "pre-dawn", "post-dusk",
-            "first light", "daybreak", "high noon", "golden hour", "blue hour", "witching hour", "crack of dawn", "dead of night", "first light of day", "last light of day"
+            "first light", "daybreak", "high noon", "golden hour", "blue hour", "witching hour", "crack of dawn", "dead of night", "first light of day", "last light of day",
+            "epoch", "era", "age", "millennium", "century", "decade", "year", "month", "week", "day", 
+            "hour", "minute", "second", "interval", "duration", "instant", "moment", "period", "season", "phase"
         ]
     },
     "location": {
@@ -50,7 +60,9 @@
         "values": [
             "forest", "beach", "mountain", "city", "desert", "ocean", "river", "lake", "cave", "garden",
             "jungle", "tundra", "valley", "island", "volcano", "canyon", "meadow", "swamp", "reef", "glacier",
-            "rainforest", "savanna", "plateau", "archipelago", "crater", "gorge", "prairie", "marsh", "atoll", "iceberg"
+            "rainforest", "savanna", "plateau", "archipelago", "crater", "gorge", "prairie", "marsh", "atoll", "iceberg",
+            "cityscape", "suburb", "countryside", "village", "town", "metropolis", "capital", "province", "state", "country", 
+            "continent", "planet", "galaxy", "universe", "dimension", "realm", "space station", "underwater city", "floating island", "castle"
         ]
     },
     "style": {
@@ -59,7 +71,9 @@
         "values": [
             "realistic", "cartoon", "anime", "pixel art", "watercolor", "oil painting", "digital art", "sketch", "3D", "vector",
             "impressionist", "surreal", "abstract", "minimalist", "cyberpunk", "steampunk", "fantasy", "sci-fi", "gothic", "art nouveau",
-            "pop art", "cubist", "expressionist", "pointillist", "graffiti", "comic book", "retro", "futuristic", "vintage", "contemporary"
+            "pop art", "cubist", "expressionist", "pointillist", "graffiti", "comic book", "retro", "futuristic", "vintage", "contemporary",
+            "art deco", "baroque", "rococo", "neoclassical", "romanticism", "photorealism", "hyperrealism", "brutalist", "Bauhaus", "maximalist", 
+            "vaporwave", "glitch art", "low poly", "cel-shaded", "chiaroscuro", "silhouette", "monochrome", "duotone", "psychedelic", "tribal"
         ]
     },
     "lighting": {
@@ -68,7 +82,9 @@
         "values": [
             "natural", "artificial", "ambient", "dramatic", "soft", "harsh", "backlit", "rim light", "spotlight", "diffused",
             "sunlight", "moonlight", "starlight", "neon", "candlelight", "firelight", "daylight", "twilight", "overcast", "shadowy",
-            "golden hour", "blue hour", "studio lighting", "volumetric", "ray-traced", "global illumination", "rim lighting", "fill light", "key light", "bounce light"
+            "golden hour", "blue hour", "studio lighting", "volumetric", "ray-traced", "global illumination", "rim lighting", "fill light", "key light", "bounce light",
+            "incandescent", "fluorescent", "LED", "halogen", "laser", "bioluminescence", "phosphorescence", "ultraviolet", "infrared", "x-ray", 
+            "gamma ray", "lens flare", "bloom", "god rays", "caustics", "subsurface scattering", "ambient occlusion", "directional light", "point light", "area light"
         ]
     },
     "camera": {
@@ -77,7 +93,9 @@
         "values": [
             "close-up", "wide shot", "medium shot", "bird's eye", "worm's eye", "dutch angle", "over the shoulder", "point of view", "establishing shot", "aerial",
             "extreme close-up", "long shot", "two-shot", "high angle", "low angle", "canted angle", "reverse angle", "first person", "master shot", "drone shot",
-            "macro", "panoramic", "group shot", "eye level", "ground level", "oblique angle", "profile shot", "third person", "insert shot", "tracking shot"
+            "macro", "panoramic", "group shot", "eye level", "ground level", "oblique angle", "profile shot", "third person", "insert shot", "tracking shot",
+            "dolly zoom", "pedestal shot", "crane shot", "steadicam", "handheld", "rack focus", "deep focus", "shallow focus", "zoom in", "zoom out", 
+            "tilt", "pan", "roll", "follow shot", "arc shot", "jib shot", "wide angle lens", "telephoto lens", "prime lens", "fisheye lens"
         ]
     },
     "animal": {
@@ -86,7 +104,9 @@
         "values": [
             "lion", "tiger", "elephant", "giraffe", "zebra", "penguin", "dolphin", "whale", "kangaroo", "koala",
             "panda", "gorilla", "chimpanzee", "rhinoceros", "hippopotamus", "cheetah", "leopard", "wolf", "fox", "bear",
-            "deer", "moose", "buffalo", "camel", "horse", "cow", "sheep", "goat", "pig", "dog"
+            "deer", "moose", "buffalo", "camel", "horse", "cow", "sheep", "goat", "pig", "dog",
+            "alligator", "crocodile", "frog", "toad", "salamander", "newt", "snake", "lizard", "turtle", "tortoise", 
+            "rabbit", "hamster", "guinea pig", "mouse", "rat", "squirrel", "chipmunk", "beaver", "otter", "raccoon"
         ]
     },
     "insect": {
@@ -95,7 +115,9 @@
         "values": [
             "butterfly", "moth", "bee", "wasp", "ant", "termite", "beetle", "ladybug", "dragonfly", "firefly",
             "grasshopper", "cricket", "cicada", "mantis", "spider", "scorpion", "centipede", "millipede", "cockroach", "mosquito",
-            "fly", "flea", "tick", "earwig", "silverfish", "aphid", "caterpillar", "chrysalis", "pupa", "larva"
+            "fly", "flea", "tick", "earwig", "silverfish", "aphid", "caterpillar", "chrysalis", "pupa", "larva",
+            "praying mantis", "stick insect", "water strider", "stink bug", "bed bug", "locust", "weevil", "termite queen", "drone bee", "hornet", 
+            "yellow jacket", "gnat", "midge", "fruit fly", "housefly", "botfly", "lacewing", "mayfly", "stonefly", "dobsonfly"
         ]
     },
     "bird": {
@@ -104,7 +126,9 @@
         "values": [
             "eagle", "hawk", "falcon", "owl", "parrot", "macaw", "cockatoo", "finch", "sparrow", "robin",
             "cardinal", "blue jay", "crow", "raven", "pigeon", "dove", "swan", "duck", "goose", "heron",
-            "flamingo", "peacock", "ostrich", "emu", "penguin", "albatross", "seagull", "woodpecker", "hummingbird", "kingfisher"
+            "flamingo", "peacock", "ostrich", "emu", "penguin", "albatross", "seagull", "woodpecker", "hummingbird", "kingfisher",
+            "vulture", "condor", "kestrel", "merlin", "osprey", "pelican", "cormorant", "puffin", "guillemot", "tern", 
+            "gull", "sandpiper", "plover", "crane", "stork", "ibis", "spoonbill", "toucan", "hornbill", "kiwi"
         ]
     },
     "fish": {
@@ -113,7 +137,86 @@
         "values": [
             "shark", "tuna", "salmon", "trout", "bass", "pike", "catfish", "goldfish", "koi", "angelfish",
             "clownfish", "pufferfish", "swordfish", "marlin", "sailfish", "eel", "stingray", "manta ray", "octopus", "squid",
-            "jellyfish", "starfish", "sea horse", "dolphin", "whale", "orca", "walrus", "seal", "sea lion", "otter"
+            "jellyfish", "starfish", "sea horse", "dolphin", "whale", "orca", "walrus", "seal", "sea lion", "otter",
+            "crab", "lobster", "shrimp", "prawn", "crayfish", "clam", "oyster", "mussel", "scallop", "barnacle", 
+            "sea urchin", "sand dollar", "anemone", "coral polyp", "sponge", "anchovy", "sardine", "mackerel", "herring", "cod"
+        ]
+    },
+    "object": {
+        "name": "Objects",
+        "description": "A collection of common objects",
+        "values": [
+            "table", "chair", "lamp", "book", "computer", "phone", "key", "cup", "plate", "fork",
+            "knife", "spoon", "bottle", "vase", "clock", "mirror", "picture frame", "candle", "plant", "sofa",
+            "bed", "pillow", "blanket", "rug", "curtain", "bookshelf", "desk", "drawer", "cabinet", "refrigerator",
+            "oven", "microwave", "toaster", "blender", "television", "remote", "headphones", "backpack", "suitcase", "umbrella",
+            "bicycle", "car", "bus", "train", "airplane", "boat", "pen", "pencil", "notebook", "wallet",
+            "hammer", "screwdriver", "wrench", "pliers", "saw", "drill", "nail", "screw", "bolt", "nut", 
+            "washer", "tape measure", "level", "ladder", "broom", "mop", "bucket", "sponge", "trash can", "recycling bin"
+        ]
+    },
+    "fantasy_race": {
+        "name": "Fantasy Races",
+        "description": "A collection of common fantasy races",
+        "values": [
+            "Elf", "Dwarf", "Orc", "Goblin", "Human", "Halfling", "Gnome", "Troll", "Ogre", "Undead", 
+            "Merfolk", "Centaur", "Satyr", "Faerie", "Tiefling", "Aasimar", "Dragonborn", "Lizardfolk", "Elemental", "Giant"
+        ]
+    },
+    "fantasy_class": {
+        "name": "Fantasy Classes/Roles",
+        "description": "A collection of common fantasy classes or roles",
+        "values": [
+            "Warrior", "Mage", "Rogue", "Cleric", "Paladin", "Ranger", "Bard", "Druid", "Monk", "Barbarian", 
+            "Sorcerer", "Warlock", "Necromancer", "Knight", "Archer", "Assassin", "Healer", "Berserker", "Shaman", "Artificer"
+        ]
+    },
+    "magic_element": {
+        "name": "Magical Elements/Schools",
+        "description": "A collection of magical elements or schools of magic",
+        "values": [
+            "Fire", "Water", "Earth", "Air", "Lightning", "Ice", "Light", "Shadow", "Arcane", "Nature", 
+            "Spirit", "Chaos", "Order", "Time", "Space", "Psionic", "Blood", "Poison", "Illusion", "Necromancy"
+        ]
+    },
+    "fantasy_creature": {
+        "name": "Fantasy Creatures",
+        "description": "A collection of mythical and fantasy creatures",
+        "values": [
+            "Dragon", "Griffin", "Unicorn", "Phoenix", "Golem", "Wyvern", "Hydra", "Chimera", "Manticore", "Basilisk", 
+            "Cyclops", "Minotaur", "Harpy", "Siren", "Kraken", "Beholder", "Lich", "Vampire", "Werewolf", "Slime"
+        ]
+    },
+    "fantasy_weapon": {
+        "name": "Fantasy Weapons",
+        "description": "A collection of fantasy-style weapons",
+        "values": [
+            "Sword", "Axe", "Mace", "Hammer", "Bow", "Crossbow", "Dagger", "Staff", "Wand", "Spear", 
+            "Halberd", "Scythe", "Flail", "Morningstar", "Greatsword", "Katana", "Rapier", "Glaive", "Trident", "Whip"
+        ]
+    },
+    "fantasy_armor": {
+        "name": "Fantasy Armor",
+        "description": "A collection of fantasy-style armor pieces and types",
+        "values": [
+            "Plate Armor", "Chainmail", "Leather Armor", "Scale Mail", "Full Helm", "Gauntlets", "Greaves", "Shield", "Buckler", "Tower Shield", 
+            "Robes", "Cloak", "Bracers", "Breastplate", "Pauldrons", "Vambraces", "Cuirass", "Sabatons", "Helmet", "Studded Leather"
+        ]
+    },
+    "fantasy_location": {
+        "name": "Fantasy Locations",
+        "description": "A collection of common locations found in fantasy settings",
+        "values": [
+            "Castle", "Dungeon", "Tavern", "Enchanted Forest", "Ancient Ruins", "Dragon's Lair", "Wizard's Tower", "Temple", "Crypt", "Portal", 
+            "Floating Island", "Underworld", "Celestial Realm", "Feywild", "Shadowfell", "City Walls", "Market Square", "Royal Palace", "Bandit Camp", "Monastery"
+        ]
+    },
+    "fantasy_item": {
+        "name": "Fantasy Items",
+        "description": "A collection of magical or notable items found in fantasy settings",
+        "values": [
+            "Potion", "Scroll", "Amulet", "Ring", "Crystal Ball", "Ancient Tome", "Magic Map", "Spellbook", "Orb", "Artifact", 
+            "Relic", "Elixir", "Talisman", "Rune Stone", "Grimoire", "Wand Core", "Dragon Scale", "Phoenix Feather", "Unicorn Horn", "Mana Crystal"
         ]
     }
 } 
