@@ -1,7 +1,22 @@
 window.MJ = window.MJ || {};
 
 MJ.UI = {
+    wildcardKeys: [], // Store wildcard keys
+
     createUI: () => {
+        // --- START WILDCARD LOADING ---
+        try {
+            const wildcardsData = JSON.parse(GM_getResourceText('wildcards'));
+            MJ.UI.wildcardKeys = Object.keys(wildcardsData);
+            console.log('Loaded wildcard keys:', MJ.UI.wildcardKeys);
+        } catch (error) {
+            console.error('Error loading wildcards.json resource:', error);
+            MJ.UI.updateStatus('Error loading wildcard data. Autocomplete might not work.');
+            // Ensure wildcardKeys is an array even if loading fails
+            MJ.UI.wildcardKeys = MJ.UI.wildcardKeys || [];
+        }
+        // --- END WILDCARD LOADING ---
+
         // Create main container with cyberpunk theme
         const container = document.createElement('div');
         container.id = `${MJ.Utils.kojima}-prompt-manager`;
@@ -143,6 +158,168 @@ MJ.UI = {
             boxShadow: 'inset 0 0 5px rgba(255,0,60,0.5)'
         });
         promptsTab.appendChild(promptInput);
+
+        // --- START WILDCARD AUTOCOMPLETE UI & LOGIC ---
+        const suggestionsBox = document.createElement('div');
+        suggestionsBox.id = 'mj-wildcard-suggestions';
+        Object.assign(suggestionsBox.style, {
+            display: 'none', // Hidden by default
+            position: 'absolute', // Position relative to container or body if needed
+            backgroundColor: '#15151f',
+            border: '1px solid #ff003c',
+            borderRadius: '4px',
+            marginTop: '2px', // Space below the textarea
+            maxHeight: '150px',
+            overflowY: 'auto',
+            zIndex: '10000', // Above other UI elements
+            width: promptInput.offsetWidth + 'px', // Match textarea width initially
+            boxShadow: '0 5px 10px rgba(0,0,0,0.5)'
+        });
+        // Insert suggestionsBox after promptInput in the DOM
+        promptInput.parentNode.insertBefore(suggestionsBox, promptInput.nextSibling);
+
+        let currentSuggestionIndex = -1; // Track highlighted suggestion
+
+        const updateSuggestions = (searchTerm) => {
+            const filteredKeys = MJ.UI.wildcardKeys.filter(key => key.startsWith(searchTerm));
+            suggestionsBox.innerHTML = ''; // Clear previous suggestions
+            currentSuggestionIndex = -1; // Reset selection index
+
+            if (filteredKeys.length > 0) {
+                filteredKeys.forEach((key, index) => {
+                    const item = document.createElement('div');
+                    item.textContent = `__${key}__`;
+                    Object.assign(item.style, {
+                        padding: '5px 8px',
+                        cursor: 'pointer',
+                        color: '#e6e6ff',
+                        fontSize: '12px',
+                        fontFamily: 'monospace'
+                    });
+
+                    item.addEventListener('mouseover', () => {
+                        // Remove highlight from others
+                        Array.from(suggestionsBox.children).forEach(child => {
+                            child.style.backgroundColor = 'transparent';
+                            child.style.color = '#e6e6ff';
+                        });
+                        // Highlight current
+                        item.style.backgroundColor = '#ffdf00';
+                        item.style.color = '#0a0a0f';
+                        currentSuggestionIndex = index;
+                    });
+
+                    item.addEventListener('click', () => {
+                        insertWildcard(key);
+                        suggestionsBox.style.display = 'none';
+                    });
+
+                    suggestionsBox.appendChild(item);
+                });
+                suggestionsBox.style.display = 'block';
+                // Reposition below textarea
+                suggestionsBox.style.top = (promptInput.offsetTop + promptInput.offsetHeight + 2) + 'px';
+                suggestionsBox.style.left = promptInput.offsetLeft + 'px';
+                suggestionsBox.style.width = promptInput.offsetWidth + 'px'; // Ensure width matches
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        };
+
+        const insertWildcard = (selectedKey) => {
+            const cursorPosition = promptInput.selectionStart;
+            const textBeforeCursor = promptInput.value.substring(0, cursorPosition);
+            const match = textBeforeCursor.match(/__([a-zA-Z0-9_]*)$/); // Find __word starting right before cursor
+
+            if (match) {
+                const startIndex = match.index;
+                const textAfterCursor = promptInput.value.substring(cursorPosition);
+                const wildcardToInsert = `__${selectedKey}__`;
+
+                promptInput.value = promptInput.value.substring(0, startIndex) + wildcardToInsert + textAfterCursor;
+
+                // Set cursor position after the inserted wildcard
+                const newCursorPosition = startIndex + wildcardToInsert.length;
+                promptInput.focus(); // Refocus is necessary
+                promptInput.setSelectionRange(newCursorPosition, newCursorPosition);
+            }
+             suggestionsBox.style.display = 'none'; // Hide after insertion
+        };
+
+        promptInput.addEventListener('input', () => {
+            const cursorPosition = promptInput.selectionStart;
+            const textBeforeCursor = promptInput.value.substring(0, cursorPosition);
+            const match = textBeforeCursor.match(/__([a-zA-Z0-9_]*)$/); // Regex to find __ followed by word characters ending at cursor
+
+            if (match) {
+                const searchTerm = match[1]; // The part after __
+                updateSuggestions(searchTerm);
+            } else {
+                suggestionsBox.style.display = 'none'; // Hide if pattern doesn't match
+            }
+        });
+
+        promptInput.addEventListener('blur', () => {
+             // Delay hiding slightly to allow click selection on suggestions
+             setTimeout(() => {
+                if (!suggestionsBox.matches(':hover')) { // Don't hide if mouse is over suggestions
+                   suggestionsBox.style.display = 'none';
+                }
+             }, 150);
+        });
+
+        promptInput.addEventListener('keydown', (e) => {
+            if (suggestionsBox.style.display === 'block' && suggestionsBox.children.length > 0) {
+                const suggestions = Array.from(suggestionsBox.children);
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault(); // Prevent cursor move in textarea
+                    currentSuggestionIndex = (currentSuggestionIndex + 1) % suggestions.length;
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault(); // Prevent cursor move in textarea
+                    currentSuggestionIndex = (currentSuggestionIndex - 1 + suggestions.length) % suggestions.length;
+                } else if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent newline in textarea
+                    if (currentSuggestionIndex >= 0 && currentSuggestionIndex < suggestions.length) {
+                        // Extract key from suggestion text: __key__ -> key
+                        const selectedText = suggestions[currentSuggestionIndex].textContent;
+                        const selectedKey = selectedText.substring(2, selectedText.length - 2);
+                        insertWildcard(selectedKey);
+                    }
+                    return; // Exit after handling Enter
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    suggestionsBox.style.display = 'none';
+                    return; // Exit after handling Escape
+                } else {
+                    // Allow typing other characters
+                    return;
+                }
+
+                // Highlight the selected suggestion
+                suggestions.forEach((item, index) => {
+                    if (index === currentSuggestionIndex) {
+                        item.style.backgroundColor = '#ffdf00';
+                        item.style.color = '#0a0a0f';
+                        // Scroll into view if necessary
+                        item.scrollIntoView({ block: 'nearest' });
+                    } else {
+                        item.style.backgroundColor = 'transparent';
+                        item.style.color = '#e6e6ff';
+                    }
+                });
+            }
+        });
+         // Adjust suggestionsBox position/width on window resize
+         window.addEventListener('resize', () => {
+            if (suggestionsBox.style.display === 'block') {
+                suggestionsBox.style.top = (promptInput.offsetTop + promptInput.offsetHeight + 2) + 'px';
+                suggestionsBox.style.left = promptInput.offsetLeft + 'px';
+                suggestionsBox.style.width = promptInput.offsetWidth + 'px';
+            }
+         });
+
+        // --- END WILDCARD AUTOCOMPLETE UI & LOGIC ---
 
         // Example and help text
         const helpText = document.createElement('div');
