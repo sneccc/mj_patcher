@@ -79,5 +79,41 @@
             "extreme close-up", "long shot", "two-shot", "high angle", "low angle", "canted angle", "reverse angle", "first person", "master shot", "drone shot",
             "macro", "panoramic", "group shot", "eye level", "ground level", "oblique angle", "profile shot", "third person", "insert shot", "tracking shot"
         ]
+    },
+    "animal": {
+        "name": "Animals",
+        "description": "A collection of animal species",
+        "values": [
+            "lion", "tiger", "elephant", "giraffe", "zebra", "penguin", "dolphin", "whale", "kangaroo", "koala",
+            "panda", "gorilla", "chimpanzee", "rhinoceros", "hippopotamus", "cheetah", "leopard", "wolf", "fox", "bear",
+            "deer", "moose", "buffalo", "camel", "horse", "cow", "sheep", "goat", "pig", "dog"
+        ]
+    },
+    "insect": {
+        "name": "Insects",
+        "description": "A collection of insect species",
+        "values": [
+            "butterfly", "moth", "bee", "wasp", "ant", "termite", "beetle", "ladybug", "dragonfly", "firefly",
+            "grasshopper", "cricket", "cicada", "mantis", "spider", "scorpion", "centipede", "millipede", "cockroach", "mosquito",
+            "fly", "flea", "tick", "earwig", "silverfish", "aphid", "caterpillar", "chrysalis", "pupa", "larva"
+        ]
+    },
+    "bird": {
+        "name": "Birds",
+        "description": "A collection of bird species",
+        "values": [
+            "eagle", "hawk", "falcon", "owl", "parrot", "macaw", "cockatoo", "finch", "sparrow", "robin",
+            "cardinal", "blue jay", "crow", "raven", "pigeon", "dove", "swan", "duck", "goose", "heron",
+            "flamingo", "peacock", "ostrich", "emu", "penguin", "albatross", "seagull", "woodpecker", "hummingbird", "kingfisher"
+        ]
+    },
+    "fish": {
+        "name": "Fish",
+        "description": "A collection of fish species",
+        "values": [
+            "shark", "tuna", "salmon", "trout", "bass", "pike", "catfish", "goldfish", "koi", "angelfish",
+            "clownfish", "pufferfish", "swordfish", "marlin", "sailfish", "eel", "stingray", "manta ray", "octopus", "squid",
+            "jellyfish", "starfish", "sea horse", "dolphin", "whale", "orca", "walrus", "seal", "sea lion", "otter"
+        ]
     }
 } 
