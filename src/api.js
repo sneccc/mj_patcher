@@ -309,6 +309,14 @@ MJ.API = {
                         try {
                             if (response.status >= 400) {
                                 console.error('API Error Response:', response.responseText);
+                                
+                                // Check if the error response contains captcha/blocking messages
+                                const errorText = response.responseText || response.statusText || '';
+                                const isCaptchaOrBlocking = MJ.API.detectCaptchaOrBlocking(errorText);
+                                if (isCaptchaOrBlocking) {
+                                    MJ.API.handleCaptchaOrBlocking(errorText);
+                                }
+                                
                                 reject(new Error(`API returned error ${response.status}: ${response.statusText}. Check console for details.`));
                                 return;
                             }
@@ -321,6 +329,13 @@ MJ.API = {
                                 const failures = result.failure;
                                 const errorMessages = failures.map(f => f.message).join('; ');
                                 console.error('API reported failures:', failures);
+                                
+                                // Check for captcha/blocking messages
+                                const isCaptchaOrBlocking = MJ.API.detectCaptchaOrBlocking(errorMessages);
+                                if (isCaptchaOrBlocking) {
+                                    MJ.API.handleCaptchaOrBlocking(errorMessages);
+                                }
+                                
                                 reject(new Error(`API reported errors: ${errorMessages}`));
                                 return;
                             }
@@ -386,5 +401,160 @@ MJ.API = {
         }
 
         return fixedPrompt;
+    },
+
+    // Detect captcha, blocking, or ToS violation messages
+    detectCaptchaOrBlocking: (errorMessage) => {
+        if (!errorMessage || typeof errorMessage !== 'string') {
+            return false;
+        }
+
+        const blockingKeywords = [
+            'temporarily blocked',
+            'blocked from accessing',
+            'captcha',
+            'suspicious activity',
+            'automated behavior',
+            'ToS violation',
+            'terms of service',
+            'rate limit',
+            'too many requests',
+            'please wait',
+            'try again later',
+            'verify you are human',
+            'human verification',
+            'security check',
+            'unusual activity',
+            'access denied',
+            'account suspended',
+            'account locked',
+            'authentication required',
+            'please verify'
+        ];
+
+        const lowerMessage = errorMessage.toLowerCase();
+        return blockingKeywords.some(keyword => lowerMessage.includes(keyword));
+    },
+
+    // Handle captcha/blocking detection
+    handleCaptchaOrBlocking: (errorMessage) => {
+        console.error('🚨 CAPTCHA/BLOCKING DETECTED:', errorMessage);
+        
+        // Set blocked state
+        MJ.API.setBlockedState(true);
+        
+        // Stop the queue immediately
+        if (MJ.Queue && MJ.Queue.stopQueueProcessing) {
+            MJ.Queue.stopQueueProcessing();
+        }
+
+        // Play warning sound
+        MJ.API.playWarningSound();
+
+        // Show critical warning in UI
+        const warningMessage = `🚨 CRITICAL: Captcha/Blocking detected! Queue stopped automatically.\n\nError: ${errorMessage}\n\nAction required:\n1. Stop sending requests immediately\n2. Check Midjourney website for captcha\n3. Wait before resuming\n4. Check your account status\n5. Use MJ.API.setBlockedState(false) to resume when resolved`;
+        
+        if (MJ.UI && MJ.UI.updateStatus) {
+            MJ.UI.updateStatus(warningMessage);
+        }
+
+        // Show browser alert as backup
+        alert(warningMessage);
+
+        // Log detailed information
+        console.log('🚨 Queue processing stopped due to captcha/blocking detection');
+        console.log('🚨 Please check Midjourney website for captcha or account issues');
+        console.log('🚨 Do not resume requests until the issue is resolved');
+        console.log('🚨 Use MJ.API.setBlockedState(false) in console to resume when ready');
+    },
+
+    // Play warning sound to alert user
+    playWarningSound: () => {
+        try {
+            // Create multiple audio contexts for better browser compatibility
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create a sequence of beeps for urgent alert
+            const beepSequence = [
+                { freq: 800, duration: 0.3 },
+                { freq: 600, duration: 0.3 },
+                { freq: 800, duration: 0.3 },
+                { freq: 600, duration: 0.3 },
+                { freq: 1000, duration: 0.5 }
+            ];
+
+            let currentTime = audioContext.currentTime;
+            
+            beepSequence.forEach((beep, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = beep.freq;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + beep.duration);
+                
+                oscillator.start(currentTime);
+                oscillator.stop(currentTime + beep.duration);
+                
+                currentTime += beep.duration + 0.1; // Small gap between beeps
+            });
+
+            console.log('🔊 Warning sound played');
+        } catch (error) {
+            console.error('Failed to play warning sound:', error);
+            
+            // Fallback: try to use system beep
+            try {
+                // Some browsers support this
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance('Warning: Captcha detected'));
+            } catch (fallbackError) {
+                console.error('Fallback sound also failed:', fallbackError);
+            }
+        }
+    },
+
+    // Test function to manually check captcha detection
+    testCaptchaDetection: (testMessage) => {
+        const message = testMessage || "You have been temporarily blocked from accessing Midjourney. This automatic temporary time out happens on repeated or serious ToS violations.";
+        console.log('Testing captcha detection with message:', message);
+        const detected = MJ.API.detectCaptchaOrBlocking(message);
+        console.log('Detection result:', detected);
+        
+        if (detected) {
+            console.log('✅ Captcha detection working correctly');
+            // Don't actually trigger the handler in test mode
+            console.log('Would trigger blocking handler...');
+        } else {
+            console.log('❌ Captcha detection failed');
+        }
+        
+        return detected;
+    },
+
+    // Check if the system is currently in a blocked state
+    isBlocked: false,
+
+    // Set blocked state
+    setBlockedState: (blocked) => {
+        MJ.API.isBlocked = blocked;
+        if (blocked) {
+            console.log('🚨 System marked as BLOCKED');
+        } else {
+            console.log('✅ System marked as UNBLOCKED');
+        }
+    },
+
+    // Enhanced queue safety check
+    canProcessQueue: () => {
+        if (MJ.API.isBlocked) {
+            console.warn('🚨 Queue processing blocked due to captcha/blocking detection');
+            return false;
+        }
+        return true;
     }
 }; 

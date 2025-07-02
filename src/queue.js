@@ -37,6 +37,13 @@ MJ.Queue = {
             return;
         }
 
+        // Check if system is blocked due to captcha/blocking detection
+        if (MJ.API && MJ.API.canProcessQueue && !MJ.API.canProcessQueue()) {
+            MJ.UI.updateStatus('🚨 Queue processing blocked due to captcha/blocking detection. Use MJ.API.setBlockedState(false) to resume when resolved.');
+            MJ.Queue.stopQueueProcessing();
+            return;
+        }
+
         // Validate settings before starting to process
         if (!MJ.API.settings.userToken || MJ.API.settings.userToken.trim() === '') {
             MJ.UI.updateStatus('Error: Authentication token not set. Please go to Settings tab and paste your Midjourney cookie/token.');
@@ -80,7 +87,15 @@ MJ.Queue = {
             }, delay);
         } catch (error) {
             console.error('Error submitting prompt:', error);
-            MJ.UI.updateStatus(`Error: ${error.message}`);
+            
+            // Check if error message contains captcha/blocking indicators
+            if (MJ.API && MJ.API.detectCaptchaOrBlocking && MJ.API.detectCaptchaOrBlocking(error.message)) {
+                console.error('🚨 Captcha/blocking detected in queue processing error');
+                MJ.API.handleCaptchaOrBlocking(error.message);
+            } else {
+                MJ.UI.updateStatus(`Error: ${error.message}`);
+            }
+            
             MJ.Queue.isProcessing = false;
         }
     },

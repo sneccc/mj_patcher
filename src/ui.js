@@ -934,6 +934,40 @@ MJ.UI = {
         saveSettingsButton.style.width = '100%';
         settingsTab.appendChild(saveSettingsButton);
 
+        // Test Block Detection button
+        const testBlockButton = createButton('🚨 Test Block Detection', () => {
+            MJ.UI.updateStatus('Testing captcha/blocking detection system...');
+            
+            // Test with the exact error message you received
+            const testMessage = "You have been temporarily blocked from accessing Midjourney. This automatic temporary time out happens on repeated or serious ToS violations.";
+            
+            console.log('🧪 Testing captcha detection with message:', testMessage);
+            
+            // Simulate the blocking detection and response
+            const isDetected = MJ.API.detectCaptchaOrBlocking(testMessage);
+            
+            if (isDetected) {
+                console.log('✅ Captcha detection working correctly - triggering full response...');
+                MJ.UI.updateStatus('✅ Captcha detection test PASSED - Triggering blocking response...');
+                
+                // Trigger the full blocking response (this will stop queue, play sound, show alerts)
+                setTimeout(() => {
+                    MJ.API.handleCaptchaOrBlocking(testMessage);
+                }, 1000); // Small delay to show the test passed message first
+            } else {
+                console.log('❌ Captcha detection test FAILED');
+                MJ.UI.updateStatus('❌ Captcha detection test FAILED - Detection system not working properly');
+                alert('❌ Test Failed: Captcha detection system is not working properly!');
+            }
+        });
+        testBlockButton.style.width = '100%';
+        testBlockButton.style.marginTop = '10px';
+        testBlockButton.style.backgroundColor = '#ff6b35'; // Orange-red color for warning/test
+        testBlockButton.style.border = '1px solid #ff003c';
+        testBlockButton.style.boxShadow = '0 0 10px rgba(255, 107, 53, 0.5)';
+        testBlockButton.title = 'Test the captcha/blocking detection system with a simulated error message';
+        settingsTab.appendChild(testBlockButton);
+
         // Add a debug button in development mode
         const debugButton = createButton('Debug Connection', async () => {
             console.log('=== DEBUG INFORMATION ===');
